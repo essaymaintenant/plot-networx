@@ -3,9 +3,9 @@ import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 import re # Regular Expressions
 import networkx as nx # for network diagrams
-
+#
 # adaptations/variations on other authors' code:
-
+#
 G = nx.Graph()
 G.add_edge(1,2,color='r',weight=2)
 G.add_edge(2,3,color='b',weight=4)
