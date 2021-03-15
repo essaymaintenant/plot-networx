@@ -26,5 +26,5 @@ weights = [G[u][v]['weight'] for u,v in edges]
 nx.draw(G, pos, edges=edges, edge_color=list(colors), width=weights)
 
 A=nx.to_pandas_adjacency(G)
-display(A)
+print(A)
 # A=nx.linalg.graphmatrix.adjacency_matrix(G)
