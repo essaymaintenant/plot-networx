@@ -1,8 +1,8 @@
-import matplotlib.pyplot as plt # plotting
-import numpy as np # linear algebra
-import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-import re # Regular Expressions
-import networkx as nx # for network diagrams
+pip install matplotlib.pyplot as plt # plotting
+pip install numpy as np # linear algebra
+pip install pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+pip install re # Regular Expressions
+pip install networkx as nx # for network diagrams
 #
 # adaptations/variations on other authors' code:
 #
