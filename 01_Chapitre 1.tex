@@ -1,0 +1,1188 @@
+%% LyX 2.3.4.4 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[../main_FR.tex]{subfiles}
+
+
+\begin{document}
+
+
+%AND: To set the right chapter number when compiling this chapter only
+\setcounter{chapter}{0} % your chapter will have the next number : 1
+
+\title[D\'etection non supervis\'ee des changements dans des images multitemporelles]{D\'etection non supervis\'ee des changements dans des images multitemporelles de t\'el\'ed\'etection}
+
+\ChapterAuthor{\mpapp}{D\'etection non supervis\'ee des changements dans des images multitemporelles de t\'el\'ed\'etection}{Sicong \textsc{Liu}, Francesca \textsc{Bovolo}, Lorenzo \textsc{Bruzzone},\\ Qian \textsc{Du} et Xiaohua \textsc{Tong}}
+\label{chap-struct}
+
+\NoFnRule
+
+\authorname{Sicong \textsc{Liu}\textsuperscript{1}, Francesca \textsc{Bovolo}\textsuperscript{2}, Lorenzo \textsc{Bruzzone}\textsuperscript{3},\\ Qian \textsc{Du}\textsuperscript{4} et Xiaohua \textsc{Tong}\textsuperscript{1}}{\vspace{0.5em}
+\textsuperscript{1}Universit\'e Tongji, Shanghai, Chine\\
+\textsuperscript{2}Fondation Bruno Kessler, Trente, Italie\\
+\textsuperscript{3}Universit\'e de Trente, Italie\\
+\textsuperscript{4}Universit\'e de l'\'Etat du Mississippi, Starkville, USA}
+
+
+\enlargethispage{2.4pc}
+
+
+\section{Introduction}
+
+\label{sec:Introduction}
+
+Les satellites de t\'el\'ed\'etection ont un grand potentiel pour la surveillance r\'ecurrente des changements dynamiques de la surface de la Terre sur une zone g\'eographique \'etendue, et contribuent de mani\`ere substantielle \`a notre compr\'ehension actuelle des changements dans l'occupation des sols et l'utilisation des sols \citep{Bruzzone2013PIEEE,Song2018Nature,Liu2019reviewHSI}.
+Une compr\'ehension scientifique des changements du sol est \'egalement essentielle pour analyser l'\'evolution environnementale et les ph\'enom\`enes anthropiques, en particulier lors de l'\'etude du changement plan\'etaire et de son impact sur la soci\'et\'e humaine.
+Gr\^{a}ce \`a la propri\'et\'e de revisite des satellites, des observations satellitaires tant \`a long terme (p.ex. annuelles) qu'\`a court terme (p.ex. quotidiennes) produisent une \'enorme quantit\'e d'images multitemporelles dans l'archive de donn\'ees \citep{Liu2015S2CVA}.
+D'apr\`es l'analyse de donn\'ees multitemporelles, des changements dans l'occupation des sols peuvent \^{e}tre d\'ecouverts et d\'etect\'es automatiquement, o\`u une connaissance des changements peut \'egalement \^{e}tre acquise.
+Ceci devient une mani\`ere importante et compl\'ementaire d'optimiser l'investigation \textit{in situ} traditionnelle, qui est souvent tr\`es co\^{u}teuse et exigeante en main-d'{\oe}uvre.
+En particulier, dans certains cas, notamment dans un sc\'enario de catastrophe naturelle, il est tr\`es difficile voire impossible de proc\'eder \`a des enqu\^{e}tes de terrain.
+La \index{d\'etection de changements (CD)} d\'etection de changements (CD) est le processus consistant \`a identifier des regions avec changements et sans changement \`a la surface de la Terre en analysant des images acquises \`a partir de la m\^{e}me zone g\'eographique \`a des moments diff\'erents \citep{SINGH1989,Coppin2004,Lu2005CDT,Liu2019reviewHSI}.
+Par cons\'equent, il est n\'ecessaire de concevoir des techniques automatiques et robustes pour d\'ecouvrir, d\'ecrire et d\'etecter efficacement des changements qui surviennent dans des images multitemporelles de t\'el\'ed\'etection.
+Dans les d\'ecennies pass\'ees, la CD est devenue un champ de recherches de plus en plus actif et a \'et\'e largement mise en {\oe}uvre dans diverses applications de t\'el\'ed\'etection, telles que la d\'eforestation, l'\'evaluation des catastrophes, l'\'evolution de l'expansion urbaine et la surveillance de l'environnement et des \'ecosyst\`emes \citep{Bovolo2007split,Bouziani2010,Du2012fusiondiff,Khan2017,Liu2020fireindex}.
+
+Fondamentalement, les techniques de CD sont d\'evelopp\'ees en se basant sur des capteurs sp\'ecifiques de satellites de t\'el\'ed\'etection.
+Dans la litt\'erature, de nombreux excellents articles se sont focalis\'es sur la discussion de probl\`emes de CD dans diff\'erents types de capteurs de satellites~: par exemple, la CD dans des images multispectrales \citep{Lu2005CDT,Ban2016}, des images SAR \citep{Ban2016} et des images hyperspectrales \citep{Liu2019reviewHSI}, ainsi que dans des donn\'ees de Lidar \citep{Okyay2019Lidar}.
+Parmi diff\'erents capteurs mont\'es sur les satellites d'EO, des scanners multispectraux peuvent acqu\'erir des images avec \`a la fois une haute r\'esolution spatiale et une large couverture spatiale.
+Au cours des d\'ecennies pass\'ees, du fait de la disponibilit\'e des donn\'ees, les images de t\'el\'ed\'etection multispectrale telles que les s\'eries Landsat et Sentinel ont constitu\'e la principale source de donn\'ees pour la surveillance de la surface de la Terre et les applications de CD \citep{Du2013fusion, Liu2020RS}. Toutefois, avec la qualit\'e et la r\'esolution spatiale de plus en plus \'elev\'ees des nouvelles images de capteurs multispectraux, en particulier pour les images \`a tr\`es haute r\'esolution (VHR), il est n\'ecessaire de concevoir des techniques de CD avanc\'ees capables de faire face \`a des profils d'\'evolution plus complexes pr\'esent\'es dans  un sc\'enario de CD plus complexe. \index{haute r\'esolution (HR)}
+\index{tr\`es haute r\'esolution (VHR)}
+
+Ces derni\`eres ann\'ees, de nombreuses m\'ethodes de CD ont \'et\'e d\'evelopp\'ees pour les images multispectrales, dont la plupart se focalisent sur l'am\'elioration de l'automatisation, la pr\'ecision et l'applicabilit\'e de la CD \citep{LEICHTLE2017,Liu2017M2C2VA,Liu2019bexpand,Wang2018RS,Saha2019,Wei2019}.
+De fa\c{c}on g\'en\'erale, selon le degr\'e d'automatisation, elles peuvent \^{e}tre group\'ees en trois categories principales: les m\'ethodes supervis\'ees, semi-supervis\'ees et non supervis\'ees.
+Habituellement, les approches supervis\'ees de CD pr\'esentent de meilleures performances avec une plus haute pr\'ecision en tirant parti de certains classificateurs supervis\'es robustes \citep{Wang2018RS}.
+Cependant, leur mise en {\oe}uvre s'appuie sur la disponibilit\'e de donn\'ees de r\'ef\'erence au sol, qui sont souvent difficiles \`a recueillir dans la plupart des cas pratiques.
+Les approches semi-supervis\'ees de CD partent d'\'echantillons d'apprentissage limit\'es ou de connaissances pr\'ealables partielles apprises \`a partir de l'image monotemporelle, o\`u l'algorithme d'apprentissage actif ou d'apprentissage par transfert peut g\'en\'eralement \^{e}tre appliqu\'e pour accro\^{\i}tre la representation de l'\'echantillon \citep{Liu2017igarss,Liu2019GAN,Zhang2018semi-CD,Tong2020}.
+Par contraste, les approches non supervis\'ees poss\`edent une automatisation sup\'erieure sans s'appuyer sur la disponibilit\'e de donn\'ees de r\'ef\'erence au sol ou de connaissances pr\'ealables \citep{Liu2017M2C2VA,Liu2019bexpand,Saha2019}.
+Par cons\'equent, l'analyse dans le cas de la CD non supervis\'ee est principalement pilot\'ee par les donn\'ees et est en fait plus ardue que les deux autres t\^{a}ches.
+Cependant, d'un point de vue d'application pratique, elle est certainement plus attrayante du fait de sa simplicit\'e et de son haut degr\'e d'automatisation.
+
+Dans ce chapitre, nous nous concentrons sur le probl\`eme de la CD non supervis\'ee dans les images multitemporelles multispectrales.
+En particulier, nous examinons et analysons la repr\'esentation des changements spectraux--spatiaux pour traiter le probl\`eme important de la CD multi-classes.
+\`A cette fin, deux approches sont d\'evelopp\'ees, \`a savoir une analyse morphologique multi-\'echelles de vecteurs de changements compress\'es et une CD multi-classes au niveau des superpixels.
+En tirant parti de l'analyse spectrale et spatiale jointe des informations de changements, les deux approches montrent des performances plus \'elev\'ees que les m\'ethodes de l'\'etat de l'art.
+Les r\'esultats exp\'erimentaux obtenus \`a partir de deux jeux de donn\'ees multispectrales r\'eelles ont confirm\'e l'efficacit\'e des approches propos\'ees en termes de pr\'ecision et de rendement sup\'erieurs de CD.
+
+Le reste de ce chapitre est organis\'e comme suit.
+Le paragraphe \ref{sec:Unsupervised_CD} indique les principaux concepts et d\'efis en CD non supervis\'ee, et examine en particulier le d\'eveloppement actuel des techniques de CD spectrale--spatiale non supervis\'ees.
+Le paragraphe \ref{sec:Methodology} d\'ecrit en d\'etail les deux approches propos\'ees de CD multi-classes non supervis\'ee.
+Une description du jeu de donn\'ees et la configuration exp\'erimentale sont fournies au paragraphe \ref{sec:Data}.
+Les r\'esultats exp\'erimentaux et les discussions figurent dans le paragraphe \ref{sec:Results}.
+Enfin, le paragraphe \ref{sec:Conclusion} tire la conclusion de ce chapitre.
+
+\section{D\'etection de changements non supervis\'ee dans les images multispectrales}
+
+\label{sec:Unsupervised_CD}
+
+\subsection{Concepts apparent\'es}
+
+\label{subsec:Concepts} %Binary CD Multiple CD
+Suivant la finalit\'e des t\^{a}ches de CD non supervis\'ee, deux cat\'egories principales de m\'ethodes sont d\'efinies~: la \textit{d\'etection binaire de changements} et la \textit{d\'etection multi-classes de changements}.
+La premi\`ere ne vise qu'\`a separer les classes avec \textit{vs} sans changements, tandis que la seconde d\'etecte des changements et distingue diff\'erentes classes au sein des pixels modifi\'es.
+Dans ce chapitre, nous consid\'erons cette derni\`ere, qui est plus attrayante  mais d\'elicate dans les applications pratiques de CD.
+On notera que dans le cas de la CD non supervis\'ee, aucune r\'ealit\'e de terrain ou connaissance pr\'ealable n'est disponible, aussi le processus CD guid\'e par les donn\'ees est-il pr\'ef\'erable plut\^{o}t que le processus guid\'e par les mod\`eles.
+Par cons\'equent, la discrimination multi-classes repr\'esente la difference entre changements associ\'ee \`a des transitions sp\'ecifiques entre classes d'occupation des sols, alors que l'information ``avant--apr\`es'' d\'etaill\'ee est absente, ce qui constitue une diff\'erence essentielle par rapport au cas supervis\'e.
+
+En g\'en\'eral, le processus de CD non supervis\'e comprend les \'etapes principales suivantes~:\break (1) pr\'etraitement de donn\'ees multitemporelles~; (2) g\'en\'eration et s\'election d'attributs~; (3) construction d'un indice de changements~; (4) conception de l'algorithme de CD~;
+(5) \'evaluation des performances.
+Les principaux composants d'une CD non supervis\'ee sont repr\'esent\'es sur la Figure \ref{fig:CD_flow}.
+Chaque \'etape est d\'ecrite et \'evoqu\'ee bri\`evement dans ce qui suit.
+
+
+%\begin{landscape}
+\vspace*{90pt}
+\begin{Figure}[!htbp]{Principaux composants techniques d'un processus de CD non supervis\'ee\label{fig:CD_flow}}
+\centering \includegraphics[angle=90, origin=bl, height=0.975\textheight]{Figures/CD_flow.eps}\vspace*{-12pt}
+%\centering \includegraphics[width=1.5\textheight]{Figures/CD_flow.eps}\vspace*{-12pt}
+ \end{Figure}
+%\end{landscape}
+
+
+\textit{Pr\'etraitement de donn\'ees multitemporelles}: lors de cette \'etape, diff\'erentes op\'erations comme l'\'etalonnage, la r\'eparation des rayures de bande (le cas \'ech\'eant), les corrections radiom\'etriques et atmosph\'eriques, l'accentuation d'images et le recalage entre images sont habituellement r\'ealis\'ees afin de g\'en\'erer des images multitemporelles  pr\'etrait\'ees de haute qualit\'e pour la CD aux \'etapes suivantes.
+En particulier, un recalage de haute pr\'ecision est l'op\'eration centrale pour une CD r\'eussie, qui peut affecter significativement les performances de CD du fait de la pr\'esence d'erreurs r\'esiduelles restantes.
+
+\textit{G\'en\'eration et s\'election d'attributs}: les attributs extraits d'images multitemporelles d'origine sont le support crucial pour repr\'esenter diff\'erentes caract\'eristiques d'objets figurant sur l'image monotemporelle et leurs variations dans le domaine temporel.
+Des attributs tels que les bandes spectrales d'origine, les indices spectraux (p.ex. indice de v\'eg\'etation par diff\'erence normalis\'ee -- NDVI, indice d'eau par diff\'erence normalis\'ee modifi\'ee -- MNDWI, indice bas\'e sur le secteur b\^{a}ti -- IBI) et textures (p.ex. moyenne, contraste, homog\'en\'eit\'e) tir\'es des bandes d'origine peuvent \^{e}tre envisag\'es en CD.
+De plus, des attributs spatiaux g\'en\'er\'es \`a partir de bandes multispectrales comme la transformation par ondelettes \citep{Celik2011}, le filtrage de Gabor \citep{Li2015Gabor}, le filtrage morphologique \citep{Falco2013}, etc., fournissent d'importantes informations g\'eom\'etriques multi-\'echelles concernant les objets d'images pour am\'eliorer la repr\'esentation des changements.
+R\'ecemment, les approches de CD bas\'ees sur l'apprentissage profond ont offert un potentiel important dans l'extraction d'attributs profonds de plus haut niveau, ce qui repr\'esente une orientation populaire dans la recherche en CD \citep{Mou2019,Saha2019}.
+\index{Image multipectrale} \index{indice de v\'eg\'etation par diff\'erence normalis\'ee (NDVI)}
+\index{indice d'eau par diff\'erence normalis\'ee modifi\'ee (MNDWI)}
+
+\textit{Construction d'un indice de changements}: l'indice de changements repr\'esente les variations temporelles extraites d'attributs d'images multitemporelles.
+Il peut \^{e}tre construit sur la base de diff\'erents op\'erateurs et algorithmes, comme la diff\'erenciation d'images univari\'ee \citep{Bruzzone2000diff}, l'analyse de vecteurs de changements (CVA) \citep{Bovolo2007p-CVA}, le rapport d'images \citep{Bazi2005}, les mesures de distance ou de similarit\'e \citep{Du2012fusiondiff}, etc.
+Les approches de transformation telles que la d\'etection multivari\'ee de changements \`a repond\'eration it\'erative (IR-MAD) \citep{Nielsen2007IRMAD}, l'analyse en composantes principales (PCA) et sa version condens\'ee \citep{Nielsen2008KPCA,Celik2009}, analyse en composantes ind\'ependantes (ICA) \citep{Liu2012Whispers}, sont \'egalement con\c{c}ues pour transformer l'information de changements de l'espace de donn\'ees d'origine dans un espace projet\'e d'attributs.
+Toutefois, une s\'election judicieuse de composants sp\'ecifiques repr\'esentant des changements int\'eressant l'utilisateur est requise.
+Celle-ci est souvent tr\`es difficile dans un cas de CD non supervis\'ee  sans connaissances pr\'ealables concernant la zone d'\'etude et le jeu de donn\'ees consid\'er\'e, ce qui pourrait limiter le degr\'e d'automatisation de l'application de CD.
+Pour un r\'esum\'e des m\'ethodes apparent\'ees de construction de diff\'erents types d'indices de changements, le lecteur pourra se reporter \`a l'article de  \citet{Bovolo2015GRSM}. \index{analyse de vecteurs de changements (CVA)}
+\index{analyse en composantes principales (PCA)} \index{analyse en composantes ind\'ependantes (ICA)}
+
+\textit{Conception d'algorithmes de d\'etection de changements}: \`a la diff\'erence des m\'ethodes de CD supervis\'ee et semi-supervis\'ee qui s'appuient sur les \'echantillons de r\'ef\'erence disponibles, les algorithmes de CD non supervis\'ee mettent davantage l'accent sur l'automatisation et la pr\'ecision.
+Ainsi, fondamentalement, la plupart des approches de CD non supervis\'ee sont guid\'ees par les donn\'ees en analysant les donn\'ees multitemporelles elles-m\^{e}mes.
+Dans ce contexte, pour une CD binaire, si l'on consid\`ere un indice de changements donn\'e g\'en\'er\'e \`a l'\'etape pr\'ec\'edente, par exemple l'amplitude d'une image de diff\'erenciation, un seuillage automatique tel qu'une segmentation empirique \citep{Bruzzone2000minicost}, Kittler--Illingworth (KI) \citep{Bazi2005}, \citet{Otsu1979} et la maximisation de l’esp\'erance (EM) au sens de Bayes \citep{Bruzzone2000diff} sont tous des algorithmes simples mais efficaces propos\'es dans la litt\'erature.
+Cependant, l'utilisation r\'eussie de telles m\'ethodes d\'epend de l'hypoth\`ese d'une certaine distribution des donn\'ees, notamment gaussienne ou mixte Rayleigh--Rice \citep{Bovolo2012C2VA, Zanetti2015}, o\`u une estimation incorrecte pourrait conduire \`a de nombreuses erreurs de d\'etection.
+Au contraire, les algorithmes de clustering tels que k-moyennes, c-moyennes floues et clustering de Gustafson--Kessel (GKC) ont \'et\'e utilis\'es pour traiter le probl\`eme de la CD binaire \citep{Celik2009, GHOSH2011}, qui sont exempts de distribution mais exigent un r\'eglage sp\'ecifique pour \'eviter des performances instables, telles qu'une baisse de la pr\'ecision due \`a une initialisation al\'eatoire.
+
+Pour un cas de CD multi-classes, la t\^{a}che non supervis\'ee devient plus complexe, \'etant donn\'e que plusieurs sous-probl\`emes doivent \^{e}tre r\'esolus simultan\'ement, notamment la s\'eparation binaire avec/sans changements, le nombre d'estimations de changements multi-classes et la  discrimination de changements multi-classes \citep{Liu2019reviewHSI}.
+En particulier, parmi de nombreuses solutions, nous rappelons la technique classique de CD multiple~: l'analyse de vecteurs de changements (CVA) \citep{Malila1980}.
+Elle a \'et\'e con\c{c}ue pour analyser d'\'eventuels changements multiples dans des paires de bandes d'images bi-temporelles.
+Une definition th\'eorique a t\'et\'e donn\'ee de l'approche CVA d'origine dans le domaine polaire pour apporter une explication math\'ematique plus claire de la CVA \citep{Bovolo2007p-CVA}.
+Toutefois, elle reste limit\'ee, c.\`a.d. qu'une partie seulement de tous les changements possibles peut \^{e}tre d\'etect\'ee puisque seules deux bandes selectionn\'ees sont prises en consid\'eration \`a chaque mise en {\oe}uvre .
+Si l'on consid\`ere plus de canaux spectraux, il devient tr\`es difficile de mod\'eliser et de visualiser simultan\'ement des changements multidimensionnels.
+Pour lever cette contrainte, une approche d'analyse de vecteurs de changements compress\'es (C$^{2}$VA) a \'et\'e propos\'ee, qui a \'etendu avec succ\`es la CVA d'origine \`a une repr\'esentation bidimensionnelle (2D) du probl\`eme multibande \citep{Bovolo2012C2VA}.
+D'autres travaux dans la litt\'erature ont d\'evelopp\'e diff\'erentes variantes de la CVA.
+Par exemple, une CVA modifi\'ee a \'et\'e d\'evelopp\'ee pour d\'eterminer le seuil d'amplitude et la direction en combinant des r\'esultats de classification d'images \`a date unique \citep{Chen2003ICVA}.
+Une approche de seuillage am\'elior\'ee sur l'amplitude des changements a \'et\'e con\c{c}ue pour optimiser la s\'eparation binaire sur chaque classe sp\'ecifique de changements \citep{Bovolo2011ICVA}.
+Une version hi\'erarchique de la C$^{2}$VA avec une projection adaptative et s\'equentielle de vecteurs de changements spectraux (SCV) \`a chaque niveau de la hi\'erarchie a \'et\'e propos\'ee pour d\'etecter des changements multiples dans des images hyperspectrales bi-temporelles \citep{Liu2015S2CVA}.
+Dans ce chapitre, nous explorons \'egalement les aptitudes potentielles de la C$^{2}$VA et l'\'etendons du point de vue spectral--spatial. \index{Analyse de vecteurs de changements (CVA)}
+\index{Analyse de vecteurs de changements compress\'es (C$^{2}$VA)} \index{Vecteurs de changements spectraux (SCV)}
+
+\textit{\'Evaluation des performances}~: de m\^{e}me que pour les m\'ethodes de CD supervis\'ee, les approches de CD non supervis\'ee binaire et multi-classes peuvent g\'en\'eralement \^{e}tre \'evalu\'ees selon l'indice de pr\'ecision de d\'etection ou d'erreur, comme la pr\'ecision globale (\textit{OA}), le coefficient Kappa (\textit{Kappa}), les erreurs d'omission (\textit{OE}) et les erreurs de commission (\textit{CE}), la courbe caract\'eristique de performance du test (\textit{ROC}) et la valeur de l'aire sous la courbe (\textit{AUC}).
+Dans ce cas, l'\'evaluation de la pr\'ecision repose habituellement sur la carte de r\'ef\'erence des changements interpr\'et\'ee manuellement.%\vadjust{\vfill\eject}
+
+Notons qu'une telle carte de r\'ef\'erence, qui n'est utilis\'ee que pour l'\'evaluation de la pr\'ecision, n'est pas consid\'er\'ee comme des donn\'ees d'apprentissage comme dans le cas supervis\'e.
+De plus, le co\^{u}t en temps de calcul constitue \'egalement un autre indicateur important qui refl\`ete l'automatisation et la performance des m\'ethodes non supervis\'ees. \index{Pr\'ecision globale (OA)}
+\index{Coefficient Kappa (Kappa)} \index{Erreurs d'omission (OE)} \index{Erreurs de commission (CE)}
+\index{Courbe caract\'eristique de performance du test (ROC)} \index{Aire sous la courbe, aire sous la courbe ROC (AUC)}
+
+\subsection{Questions non r\'esolues et d\'efis}
+
+\label{subsec:Challenges} Le d\'eveloppement actuel des techniques de CD non supervis\'ee pour les images multispectrales de t\'el\'ed\'etection a connu un grand succ\`es dans de nombreuses applications pratiques.
+Toutefois, il existe encore des questions non r\'esolues et des d\'efis qui m\'eritent une analyse plus pouss\'ee, parmi lesquels on peut citer de fa\c{c}on non exhaustive~:
+\begin{hermesenumerate}
+\item une proc\'edure de pr\'etraitement multitemporel de haute pr\'ecision, par exemple des techniques de recalage~;
+\item une am\'elioration de la qualit\'e des donn\'ees multitemporelles, en raison de mauvaises conditions d'imagerie telles que du bruit de syst\'eme, une contamination nuageuse et des variations spectrales saisonni\`eres~;
+\item des techniques avanc\'ees pour l'estimation correcte du vrai nombre de changements multi-classes dans les sc\'enarios d'images~;
+\item une mod\'elisation spectrale--spatiale de cibles de changements pour enrichir la repr\'esentation spectrale d'origine par pixels~;
+\item une approche CD robuste et efficiente de fa\c{c}on non supervis\'ee, surtout pour une scene de CD complexe et de grande taille~;
+\item une repr\'esentation des attributs de changements tirant parti \`a la fois des techniques d'apprentissage automatique et d'apprentissage profond.
+\end{hermesenumerate}
+\index{Image multipectrale}
+
+\subsection{Techniques spectrales--spatiales de CD non supervis\'ee}
+
+\label{subsec:SSCD} Malgr\'e la r\'eussite des m\'ethodes de CD susmentionn\'ees, en particulier des m\'ethodes bas\'ees sur la CVA, elles se concentrent principalement sur les changements spectraux dans chaque pixel individuel ou un voisinage local \citep{Bovolo2009parcel, Bovolo2012C2VA, Liu2015S2CVA}.
+Les caract\'eristiques g\'eom\'etriques des cibles de changement ne sont pas compl\`etement mod\'elis\'ees et pr\'eserv\'ees.
+Ceci peut accro\^{\i}tre l'ambig\"{u}it\'e du fait de variations spectrales anormales dans des pixels isol\'es et d'erreurs (p.ex. des erreurs de recalage), aboutissant \`a la pr\'esence d'erreurs d'omission et de commission, en particulier lorsqu'on a affaire \`a des images VHR.
+En pareil cas, les m\'ethodes de CD traditionnelles bas\'ees sur les pixels peuvent perdre de leur efficacit\'e, puisqu'elles ont \'et\'e d\'evelopp\'ees sous l'hypoth\`ese que les pixels sont spatialement ind\'ependants.
+Cependant, pour des images multispectrales dans des sc\'enarios urbains complexes, des probl\`emes ardus peuvent se poser en raison de la repr\'esentation spectrale limit\'ee~; ainsi, la m\^{e}me classe d'objets peut pr\'esenter des spectres diff\'erents, ou des objets diff\'erents peuvent pr\'esenter des spectres identiques ou tr\`es similaires.
+Cela pourrait accro\^{\i}tre significativement la difficult\'e de d\'etection, surtout lorsqu'on consid\`ere la t\^{a}che de CD multi-classes.
+
+%%\vfill\eject
+%\clearpage
+
+Pour pallier les probl\`emes ci-dessus dans les techniques de CD bas\'ee sur les pixels (PBCD), les m\'ethodes d'analyse conjointe spectrale--spatiale et de CD bas\'ee sur les objets (OBCD) sont des techniques r\'epandues propos\'ees dans la litt\'erature.
+Pour les premi\`eres, des filtres morphologiques (c.\`a.d. des filtres auto-duaux de reconstruction et des filtres s\'equentiels altern\'es) ont \'et\'e combin\'es avec la CVA pour la CD binaire dans les images VHR \citep{DallaMura2008}.
+Cependant, une fen\^{e}tre glissante (c.\`a.d. un \'el\'ement structurant (SE)) servant au filtrage doit \^{e}tre fix\'ee \`a un niveau donn\'e~; elle n'est donc pas robuste pour une mise en {\oe}uvre multiniveau.
+Des profils d'attributs (AP) morphologiques ont \'et\'e appliqu\'es pour extraire des attributs g\'eom\'etriques li\'es \`a la structure au sein de la sc\`ene \`a partir de chaque date d'images panchromatiques \citep{Falco2013}.
+Cela inclut une extraction multiniveau de regions connexes de la sc\`ene \`a diff\'erentes \'echelles.
+Des informations de changements sur les b\^{a}timents bas\'ees sur la diff\'erence dans l'indice morphologique du b\^{a}ti (MBI) multitemporel au niveau des attributs et de la d\'ecision ont \'et\'e envisag\'ees pour d\'etecter des changements sur les b\^{a}timents dans des images VHR \citep{Huang2014}.
+Une approche d'expansion spectrale--spatiale de bande a \'et\'e d\'evelopp\'ee pour accentuer la repr\'esentation des changements dans des images multispectrales \`a bandes limit\'ees, o\`u des bandes suppl\'ementaires ont \'et\'e g\'en\'er\'ees \`a la fois des points de vue spectral et spatial \citep{Liu2019bexpand}. \index{Tr\`es haute r\'esolution (VHR)}
+
+Pour les m\'ethodes d'OBCD, il existe quatre cat\'egories principales~: image-objet, classe-objet, multitemporel-objet et CD hybride \citep{Chen2012, Hussain2013}. %%%%%% !!! check meaning
+Une approche de CD bas\'ee sur les objets a \'et\'e con\c{c}ue par \citep{Liu2010_Geobia}, qui analyse diff\'erents attributs spectraux et de texture extraits de deux images temporelles ind\'ependantes au cours du processus de segmentation.
+Une segmentation en superpixels a \'et\'e appliqu\'ee \`a des images bi-temporelles superpos\'ees, et plusieurs attributs d\'eriv\'es ont \'et\'e utilis\'es pour d\'ecrire des changements dans l'image de diff\'erences selon la classification supervis\'ee \citep{Wu2012isprs}.
+Une m\'ethode bas\'ee sur les objets a \'et\'e con\c{c}ue pour cr\'eer des objets dans chaque image monotemporelle selon une segmentation, puis g\'en\'erer diff\'erents attributs repr\'esentatifs \citep{Wang2018RS}.
+Une m\'ethode d'OBCD avec fusion suivant une th\'eorie de Dempster--Shafer pond\'er\'ee (wDST) a \'et\'e propos\'ee en combinant de multiples r\'esultats de PBCD, qui peut calculer et affecter automatiquement un poids de certitude pour chaque objet du r\'esultat de PBCD tout en prenant en consid\'eration la stabilit\'e d'un objet \citep{Han2020WDSfusion}.
+Toutefois, le choix de l'\'echelle optimale de segmentation reste une question ouverte et a \'et\'e r\'ealis\'e principalement sur la base de l'analyse  empirique dans les m\'ethodes d'OBCD \citep{Kaszta2016}.
+En outre, la plupart des travaux existants ci-dessus se concentraient sur la r\'esolution d'un probl\`eme de CD binaire, et tr\`es peu \'etaient con\c{c}us pour traiter du cas plus d\'elicat de la CD multi-classes non supervis\'ee \citep{Liu2019bexpand}.
+
+Par cons\'equent, les probl\`emes suivants devraient faire l'objet d'un suppl\'ement d'analyse\text{~: }(1) comment les pixels spatialement voisins influent sur la repr\'esentation et la d\'etection non supervis\'ee des changements~; (2) comment mod\'eliser efficacement les informations structurales et g\'eom\'etriques de cibles de changement pour rehausser la repr\'esentation des changements~; (3) comment int\'egrer les descriptions multi-\'echelles et multidimensionnelle des changements pour accro\^{\i}tre la s\'eparabilit\'e des changements~; (4) comment trouver de mani\`ere adaptative une \'echelle de segmentation appropri\'ee dans l'approche OBCD non supervis\'ee.
+Dans ce chapitre, nous examinons ces questions et d\'eveloppons de nouvelles approches spectrales--spatiales de CD dans les images multitemporelles multispectrales. \index{Image multipectrale}
+
+\section{Approches non supervis\'ees de d\'etection de changements multi-classes bas\'ees sur la mod\'elisation d'informations spectrales--spatiales}
+
+\label{sec:Methodology}
+
+\subsection{Analyse s\'equentielle de vecteurs de changements spectraux (S$^{2}$CVA)}
+
+\label{subsec:S2CVA}
+
+\index{Analyse s\'equentielle de vecteurs de changements spectraux (S$^{2}$CVA)} \index{Image hyperpectrale}
+\index{Analyse de vecteurs de changements compress\'es (C$^{2}$VA)} \index{Vecteur de changements spectraux (SCV)}
+\index{Distance angulaire spectrale (SAD)} Nous rappelons d'abord ici une m\'ethode de CD non supervis\'ee multi-classes, populaire dans l'\'etat de l'art actuel, la S$^{2}$CVA.
+Les deux approches propos\'ees sont con\c{c}ues en se basant sur celle-ci.
+Toutefois, il est important de noter que la S$^{2}$CVA qui est par pixel repose uniquement sur l'analyse de l'information spectrale.
+\`A l'origine, en partant de la C$^{2}$VA standard \citep{Bovolo2012C2VA}, la S$^{2}$CVA a \'et\'e sp\'ecialement propos\'ee pour la CD multi-classes dans des images hyperspectrales bi-temporelles selon une analyse hi\'erarchique.
+Elle permet la visualisation et la d\'etection de changements multiples en prenant en consid\'eration tous les canaux spectraux, sans n\'egliger aucune  bande.
+Un domaine polaire 2D compress\'e est constitu\'e en se basant sur la  construction de deux variables de changement \citep{Liu2015S2CVA}, c.\`a.d. l'amplitude $\rho$ et la direction $\theta$.
+Plus particuli\`erement, l'amplitude $\rho$ est la compression euclidienne des SCV.
+Elle mesure la luminosit\'e spectrale des changements.
+La direction $\theta$ est construite d'apr\`es la distance angulaire spectrale (SAD) \citep{Keshava2004}, qui indique des changements diff\'erents par rapport aux variances dans la r\'eponse spectrale pour un pixel donn\'e.
+Cependant, on notera que l'information de transition de classe ``origine--destination'' n'est pas expliqu\'ee du fait de la nature non supervis\'ee de la S$^{2}$CVA.
+Plus sp\'ecifiquement, les variables de changement $\rho$ et $\theta$ sont d\'efinies comme~:
+\begin{align}
+\rho=\sqrt{\sum_{b=1}^{B}\left(X_{D}^{b}\right)^{2}}=\sqrt{\sum_{b=1}^{B}\left(X_{2}^{b}-X_{1}^{b}\right)^{2}}\label{eq:mag_img}
+\end{align}
+\begin{align}
+\theta=\arccos\left[\left(\sum_{b=1}^{B}\left(X_{D}^{b}r^{b}\right)/\sqrt{\sum_{b=1}^{B}\left(X_{D}^{b}\right)^{2}\sum_{b=1}^{B}\left(r^{b}\right)^{2}}\right)\right]\label{eq:dir_img}
+\end{align}
+o\`u $X_{D}^{b}$ est la \textit{b}-i\`eme composante (\textit{b}=1,...,\textit{B}) de l'image $\textbf{X}_{D}$ de diff\'erences (SCV), qui a \'et\'e calcul\'ee sur les images recal\'ees $\textbf{X}_{1}$ et
+$\textbf{X}_{2}$, et \textit{B} est le nombre de bandes d'image (c.\`a.d. la dimensionnalit\'e de SCVs).
+$r^{b}$ est la \textit{b}-i\`eme composante d'un vecteur de r\'ef\'erence adaptatif\textbf{ }\textbf{\textit{r}}.
+Dans la C$^{2}$VA standard, \textbf{\textit{r}} est d\'efini comme un vecteur unitaire constant $\textbf{\textit{r}}=\left[1/\sqrt{B},...,1/\sqrt{B}\right]$ \citep{Bovolo2012C2VA}.
+Dans la S$^{2}$CVA, il est am\'elior\'e en tant que premier vecteur propre de la matrice de covariance \textbf{A} de $\textbf{X}_{D}$ \citep{Liu2015S2CVA}~:
+\begin{align}
+\textbf{A}=cov\left(\textbf{X}_{D}\right)=\Expect\left[\left(\textbf{X}_{D}-\Expect\left[\textbf{X}_{D}\right]\right)\left(\textbf{X}_{D}-\Expect\left[\textbf{X}_{D}\right]\right)^{\textit{T}}\right]\label{eq:eigenvector}
+\end{align}
+o\`u $\Expect\left[\textbf{X}_{D}\right]$ est l'esp\'erance de $\textbf{X}_{D}$.
+La d\'ecomposition en \'el\'ements propres de \textbf{A} peut \^{e}tre repr\'esent\'ee comme~:
+\begin{align}
+\textbf{A}\cdot\textbf{V}=\textbf{V}\cdot\textbf{W}\label{eq:decomA}
+\end{align}
+o\`u \textbf{W} est une matrice diagonale dont les valeurs propres sont class\'ees par ordre d\'ecroissant (c.\`a.d. que $\lambda^{1}>\lambda^{2}>...\lambda^{B}$) dans la diagonale, et \textbf{V} est la matrice de vecteurs propres (c.\`a.d. $\textbf{V}=[\textbf{v}^{1},\textbf{v}^{2},\textbf{v}^{3},...,\textbf{v}^{B}]$).
+Le vecteur de r\'ef\'erence \textbf{\textit{r}} est d\'efini comme le premier vecteur propre $\textbf{v}^{1}$ correspondant \`a la plus grande valeur propre $\lambda^{1}$, c.\`a.d. que $\textbf{r}=\textbf{v}^{1}$.
+Notons que cela se traduit par une repr\'esentation am\'elior\'ee des changements en projetant les SCV dans une direction de r\'ef\'erence qui maximise la variance de la mesure, tout en pr\'eservant l'information  discriminative de diff\'erents changements.
+
+\begin{Figure}[!h]{\emph{2D} Domaine polaire de repr\'esentation des changements dans la m\'ethode C$^{2}$VA\label{fig:2Dpolar}\vspace*{10pt}}
+\centering \includegraphics[width=0.7\textwidth]{Figures/2Dpolar.eps}
+ \end{Figure}
+
+
+Un domaine polaire 2D compress\'e \textbf{\textit{D}} est ensuite d\'efini d'apr\`es $\rho$ et $\theta$:
+\begin{align}
+\textit{\textbf{D}}=\left\{ \rho\in\left[0,\rho_{\max}\right]\text{ et }\theta\in[0,\pi]\right\} \label{eq:polardomain}
+\end{align}
+o\`u $\rho_{max}$ est la valeur maximum de $\rho$.
+Un diagramme de dispersion en demi-cercle (voir Figure \ref{fig:2Dpolar}) est utilis\'e pour visualiser des changements multiples dans \textbf{\textit{D}}.
+Les r\'egions du demi-cercle $\textit{SC}_{n}$ (qui repr\'esente les pixels inchang\'es) et du demi-anneau $\textit{SA}_{c}$ (qui repr\'esente les pixels chang\'es) sont d\'efinies math\'ematiquement comme~:
+\begin{align}
+SC_{n}=\left(\rho,\theta:0\leq\rho<T_{\rho}\text{ et }0\leq\theta\leq\pi\right)\label{eq:polardomain_SCn}
+\end{align}
+\begin{align}
+SA_{c}=\left(\rho,\theta:T_{\rho}\leq\rho<\rho_{max}\text{ et }0\leq\theta\leq\pi\right)\label{eq:polardomain_SAc}
+\end{align}
+\indent Sous l'hypoth\`ese que $\textbf{X}_{1}$ et $\textbf{X}_{2}$ sont corrig\'es radiom\'etriquement et geom\'etriquement, dans le domaine polaire 2D, les SCV inchang\'es se traduisent par de faibles valeurs d'amplitude proches de z\'ero et sont donc r\'epartis \`a l'int\'erieur de $SC_{n}$, alors que les SCV chang\'es sont repr\'esent\'es dans $SA_{c}$ avec des amplitudes sup\'erieures.
+Diff\'erents comportements spectraux des SCV refl\'et\'es sur la variable de direction, ce qui conduit \`a la repr\'esentation de changements multi-classes dans chaque secteur de $SA_{c}$.
+Le probl\`eme de CD multi-classes consid\'er\'e est r\'esolu en d\'efinissant un seuil $T_{\rho}$ suivant l'amplitude $\rho$ pour s\'eparer les SCV inchang\'es et chang\'es (c.\`a.d. associ\'es \`a $SC_{n}$ et $SA_{c}$, respectivement), et pour s\'eparer des changements multiples ($C_{1}$,...,$C_{K}$) suivant la direction $\theta$ en sp\'ecifiant des seuils multiples\break $T_{\theta,k}$ (\textit{k}=1,..., \textit{K}-1) dans $SA_{c}$.
+On notera qu'une analyse hi\'erarchique est effectu\'ee pour d\'ecouvrir et d\'etecter tous les changements possibles (aussi bien les changements forts que subtils) dans des images hyperspectrales du fait de repr\'esentations complexes des changements en grandes dimensions dans les images hyperspectrales.
+Toutefois, un plus petit nombre de niveaux peut \^{e}tre obtenu lorsqu'on ne consid\`ere que quelques bandes spectrales, comme dans le cas multispectral.
+\index{Image multispectrale} \index{Image hyperspectrale}
+
+\subsection{Analyse morphologique multi-\'echelles de vecteurs de changements compress\'es}
+
+\label{subsec:M2C2VA}
+
+\index{Analyse morphologique multi-\'echelles de vecteurs de changements compress\'es (M$^{2}$C$^{2}$VA)}
+Dans ce paragraphe, nous introduisons une m\'ethode propos\'ee d'analyse morphologique multi-\'echelles de vecteurs de changements compress\'es, (M$^{2}$C$^{2}$VA).
+Elle vise \`a explorer une mani\`ere ad\'equate d'int\'egrer des informations spectrales--spatiales de changements multi-\'echelles, en particulier pour am\'eliorer la repr\'esentation et la discrimination de changements multi-classes en C$^{2}$VA.
+L'approche propos\'ee consiste en trois \'etapes principales~: 1) reconstruction des SCV bas\'ee sur un traitement morphologique multi-\'echelles~; 2) ensemble d'informations de changements multi-classes~; 3) repr\'esentation et discrimination de changements multi-classes.
+Le sch\'ema de principe de l'approche propos\'ee est repr\'esent\'e sur la Figure \ref{fig:M2C2VA_block}.
+
+\subsubsection{Reconstruction des SCV bas\'ee sur un traitement morphologique multi-\'echelles}
+
+Dans la C$^{2}$VA standard, un SCV indique un pixel qui est inchang\'e ou pr\'esnte un type possible de changement selon sa signature sp\'ecifique et les variables de changement construites (c.\`a.d. $\rho$ et $\theta$).
+Cependant, les SCV d'origine peuvent contenir des variations spectrales anormales et des bruits, ce qui peut conduire \`a un grand nombre d'erreurs d'omission et de commission.
+Pour pallier ce probl\`eme, le profil morphologique (MP) est appliqu\'e pour mieux mod\'eliser et pr\'eserver la structure g\'eom\'etrique de cibles de changement.
+Il est d\'efini comme une suite d'op\'erations de fermeture et d'ouverture morphologique sur l'image avec diff\'erentes tailles d'\'el\'ements structuraux (SE).
+En particulier, l'ouverture par reconstruction ($O_{R}$) et la fermeture par reconstruction ($C_{R}$) \citep{Benediktsson2005} pour une image \textit{f} en niveaux de gris sont d\'efinies comme~:
+\begin{align}
+O_{R}^{i}(f)=R_{\delta}\left[\varepsilon^{i}(f)\right]
+\end{align}\vspace*{-8pt}
+\begin{align}
+C_{R}^{i}(f)=R_{\varepsilon}\left[\delta^{i}(f)\right]
+\end{align}
+o\`u \textit{i} est le rayon du SE.
+Ici, $\delta^{i}(\cdot)$ et $\varepsilon^{i}(\cdot)$ sont respectivement les op\'erations de dilatation et d'\'erosion.
+$R_{\delta}$ et $R_{\varepsilon}$ sont respectivement la reconstruction geod\'esique par dilatation et \'erosion.
+En particulier, les composantes du MP, c.\`a.d. $O_{R}$ et $C_{R}$, sont capables d'att\'enuer des r\'egions plus claires et plus sombres, respectivement, qui sont plus petites que le SE mouvant, tout en pr\'eservant les caract\'eristiques g\'eom\'etriques d'une r\'egion plus grande que le SE \citep{DallaMura2010AP}.
+De petits objets isol\'es sont fusionn\'es dans un fond local environnant tandis que la structure principale est maintenue.
+En raison du fait que diff\'erents objets pr\'esentent habituellement des tailles diff\'erentes, la repr\'esentation multi-\'echelles nous permet d'explorer diff\'erents domaines spatiaux hypoth\'etiques en utilisant une plage de tailles de SE, afin d'obtenir la meilleure r\'eponse pour diff\'erentes structures \citep{DallaMura2008}.
+
+%\begin{landscape}
+\vspace*{70pt}
+\begin{Figure}[!htbp]{Sch\'ema de principe de la technique M$^{2}$C$^{2}$VA  propos\'ee \label{fig:M2C2VA_block}}
+\centering \includegraphics[angle=90, origin=bl, height=0.975\textheight]{Figures/M2C2VA_block.eps}
+%\centering \includegraphics[width=1.5\textwidth]{Figures/M2C2VA_block.eps}
+ \end{Figure}
+%\end{landscape}
+
+
+
+Pour les SCV $\textbf{X}_{D}$ de dimension \textit{B}, \`a une \'echelle \textit{i} donn\'ee, ses $O_{R}$ et $C_{R}$ sont \'egalement de dimension \textit{B}:
+\begin{align}
+O_{R}^{i}\left(\mathbf{X}_{\mathrm{D}}\right)=\left\{ O_{R}^{i}\left(\mathbf{X}_{\mathrm{D}}^{1}\right),\ldots,O_{R}^{i}\left(\mathbf{X}_{\mathrm{D}}^{b}\right),\ldots,O_{R}^{i}\left(\mathbf{X}_{\mathrm{D}}^{B}\right)\right\}
+\end{align}
+\begin{align}
+&C_{R}^{i}\left(\mathbf{X}_{\mathrm{D}}\right)=\left\{ C_{R}^{i}\left(\mathbf{X}_{\mathrm{D}}^{1}\right),\ldots,C_{R}^{i}\left(\mathbf{X}_{\mathrm{D}}^{b}\right),\ldots,C_{R}^{i}\left(\mathbf{X}_{\mathrm{D}}^{B}\right)\right\}\\[10pt]
+&\ b\in[1,B],i\in[1,N]\nonumber
+\end{align}
+\indent Notons que soit $O_{R}^{i}\left(\mathbf{X}_{\mathrm{D}}\right)$, soit $C_{R}^{i}\left(\mathbf{X}_{\mathrm{D}}\right)$ peut \^{e}tre utilis\'e comme entr\'ee pour le d\'etecteur (p.ex. S$^{2}$CVA), mais des ambig\"{u}it\'es pourraient appara\^{\i}tre du fait de la s\'election d'un op\'erateur sp\'ecifique (c.\`a.d. $O_{R}$ ou $C_{R}$) et des effets qui en d\'ecoulent (c.\`a.d. l'att\'enuation d'objets plus clairs ou plus sombres).
+L'utilisation jointe de $O_{R}$ et $C_{R}$ est susceptible d'\^{e}tre plus fiable.
+Dans le pr\'esent travail, un voisinage de connexit\'e quatre a \'et\'e consid\'er\'e, et le marqueur et l'image de masque repr\'esentaient le r\'esultat de dilatation et la bande d'entr\'ee d'origine (pour $O_{R}$) (ou l'image compl\'ementaire de la bande d'entr\'ee d'origine pour $C_{R}$), respectivement.
+Une forme de disque a \'et\'e choisie pour le SE, dont il a \'et\'e d\'emontr\'e qu'il s'agissait d'une forme robuste dans diff\'erents sc\'enarios \citep{Benediktsson2005,DallaMura2008}.
+La taille du SE \textit{i} a \'et\'e augment\'ee de 1 \`a 6, afin de r\'ealiser une analyse multi-\'echelles en utilisant les SCV reconstruits.
+
+\subsubsection{Ensemble d'informations de changements multi-\'echelles}
+
+En augmentant la taille du SE, des objets de changement peuvent \^{e}tre mod\'elis\'es \`a diff\'erentes \'echelles, tout en explorant l'interaction avec les regions environnantes pour pr\'eserver plus de d\'etails geom\'etriques.
+Par cons\'equent, une description plus compl\`ete d'objets de changement est obtenue par l'interm\'ediaire d'une analyse multi-\'echelles.
+Par cons\'equent, un ensemble multi-\'echelles est mis en {\oe}uvre sur les SCV reconstruits.
+Soit $OC_{R}^{i}\left(\mathbf{X}_{\mathrm{D}}\right)$ la superposition des SCV reconstruits (c.\`a.d. $O_{R}^{i}\left(\mathbf{X}_{\mathrm{D}}\right)$ et $C_{R}^{i}\left(\mathbf{X}_{\mathrm{D}}\right)$) \`a une taille \textit{i} donn\'ee, pr\'esentant une dimensionnalit\'e de 2$\times$B.
+Elle est d\'efinie comme~:
+\begin{align}
+OC_{R}^{i}\left(\mathbf{X}_{\mathrm{D}}\right)=\left[O_{R}^{i}\left(\mathbf{X}_{\mathrm{D}}\right),C_{R}^{i}\left(\mathbf{X}_{\mathrm{D}}\right)\right]
+\end{align}
+\indent Alors, le SCV \'etendu $S[u,v]$ est d\'efini comme une int\'egration de $OC_{R}^{i}\left(\mathbf{X}_{\mathrm{D}}\right)$ s\'equentiels, avec des bornes inf\'erieure et sup\'erieure respectivement \'egales \`a $u$ et $v$~:
+\begin{align}
+S[u,v]=\left[OC_{R}^{u}\left(\mathbf{X}_{\mathrm{D}}\right),OC_{R}^{u+1}\left(\mathbf{X}_{\mathrm{D}}\right),\ldots,OC_{R}^{v}\left(\mathbf{X}_{\mathrm{D}}\right)\right]
+\end{align}
+\indent Par cons\'equent, un ensemble \'etendu d'attributs de SCV avec une dimensionnalit\'e 2$\times$$B$$\times$$M$ est construit, o\`u $M$ est la longueur de composantes dans la suite, c.\`a.d. $M=v-u+1$.
+Il convient de noter que $S[u,v]$ \'etend la repr\'esentation de changements suivant la direction spectrale, tout en prenant en consid\'eration l'information spatiale multi-\'echelles dans le processus d'ensemble.
+Ensuite, $S[u,v]$ est utilis\'e comme entr\'ee pour le d\'etecteur.
+
+%\begin{landscape}
+\vspace*{70pt}
+\begin{Figure}[!htbp]{Sch\'ema de principe de l'approche propos\'ee de CD multi-classes au niveau des superpixels\label{fig:SuperCD_block}}
+\centering \includegraphics[angle=90, origin=bl, height=0.975\textheight]{Figures/SuperCD_block.eps}
+%\centering \includegraphics[width=1.5\textwidth]{Figures/SuperCD_block.eps}
+\end{Figure}
+%\end{landscape}
+
+\subsubsection{Repr\'esentation et discrimination de changements multi-classes}
+
+Le but de cette \'etape est de visualiser et de discriminer des changements multi-classes pr\'esents dans les SCV reconstruits.
+\`A cette fin, le d\'etecteur de S$^{2}$CVA introduit au paragraphe \ref{subsec:S2CVA} est appliqu\'e sur $S[u,v]$.
+Notons que le d\'etecteur exploite non seulement des variations spectrales, mais \'egalement des variations spatiales repr\'esent\'ees dans les composantes des SCV reconstruits.
+Il convient \'egalement de noter que le diagramme de dispersion polaire 2D projette des informations de changements multi-classes des SCV reconstruits consid\'er\'es de dimension \'elev\'ee dans un espace d'attributs de basse dimension (c.\`a.d. 2D), ce qui est entach\'e de pertes et est de surcro\^{\i}t ambigu sur le type de changements.
+Toutefois, les informations discriminantes les plus significatives de diff\'erents changements sont preserv\'ees.
+
+Au lieu d'utiliser un seuillage pour segmenter en classes binaires et multiples les variables $\rho$ et $\theta$, le clustering simple mais efficace, c.\`a.d. \textit{k}-means, est utilis\'e pour g\'en\'erer la carte de CD finale, qui ne s'appuie sur aucune distribution particuli\`ere des donn\'ees.
+Ceci est d\^{u} au fait que les pixels chang\'es et inchang\'es dans $\rho$ et les changements multi-classes dans $\theta$ ne suivent pas toujours un m\'elange de distributions gaussiennes \citep{Zanetti2015}.
+Ainsi, pour l'\'etape de CD binaire (c.\`a.d. la s\'eparation de deux classes), le nombre de groupements $k_{\rho}$ est \'egal \`a 2, et pour l'\'etape de CD multi-classes, le nombre $k_{\theta}$ est d\'efini comme le nombre de changements observ\'e in le diagramme de dispersion polaire 2D.
+
+\subsection{Analyse au niveau des superpixels de vecteurs de changements compress\'es}
+
+\label{subsec:SupCD}
+
+\index{Analyse au niveau des superpixels de vecteurs de changements compress\'es (SPC$^{2}$VA)}
+Dans ce paragraphe, nous proposons une approche non supervis\'ee d'analyse au niveau des superpixels de vecteurs de changements compress\'es (SPC$^{2}$VA) pour la CD multi-classes.
+L'analyse traditionnelle des changements spectraux au niveau des pixels est transpos\'ee vers le niveau des superpixels.
+Par cons\'equent, la repr\'esentation et l'identification des changements spectraux sont r\'egularis\'ees et rehauss\'ees sous les contraintes de superpixels.
+Le sch\'ema de principe de l'approche propos\'ee est repr\'esent\'e sur la Figure~\ref{fig:SuperCD_block}.
+
+
+
+\subsubsection{Repr\'esentation des changements spectraux au niveau des superpixels}
+
+\index{Clustering lin\'eaire it\'eratif simple (SLIC)} Les SCV d'origine se concentrent sur la repr\'esentation des variations spectrales issues de chaque pixel individuel, ignorant ainsi la corr\'elation spatiale avec les pixels voisins et l'homog\'en\'eit\'e spectrale locale associ\'ee aux objets r\'eels d'occupation des sols.
+Ceci peut conduire \`a des erreurs de commission et d'omission, et \`a une baisse de la pr\'ecision globale de d\'etection.
+La segmentation en superpixels peut capturer la redondance d'images et g\'en\'erer des primitives commodes pour calculer des attributs repr\'esentatifs, tout en r\'eduisant la complexit\'e du traitement et de l'analyse subs\'equents.
+Dans le pr\'esent travail, nous avons utilis\'e l'algorithme de clustering lin\'eaire it\'eratif simple (SLIC) \citep{Achanta2012} en tant qu'algorithme central pour g\'en\'erer des segments de superpixels.
+Compar\'e aux autres m\'ethodes populaires de segmentation, le SLIC offre de meilleures performances dans la conformit\'e aux fronti\`eres et g\'en\`ere des superpixels de mani\`ere efficiente dans les m\^{e}mes conditions de mat\'eriel.
+%%\vfill\eject
+%\clearpage
+
+En outre, SLIC est \'econome en m\'emoire, et ne n\'ecessite que le stockage de la distance de chaque pixel au centre du groupement le plus proche.
+Plus important encore, il peut ais\'ement \^{e}tre int\'egr\'e dans le cadre de la m\'ethode propos\'ee, en perticulier pour le passage du niveau des pixels \`a celui des superpixels dans la d\'etection et la repr\'esentation des changements spectraux, ce qui conditionne l'utilisation ad\'equate de l'algorithme.
+
+L'id\'ee g\'en\'erale de l'algorithme SLIC est de trouver de petits groupements r\'egionaux en consid\'erant leur homog\'en\'eit\'e locale \citep{Achanta2012}.
+L'\'etape-cl\'e consiste \`a calculer la distance $d$ qui met en {\oe}uvre une mesure du point de vue spectral--spatial.
+Soient $d_{color}$ et $d_{xy}$ les distances spectrale et spatiale entre deux pixels donn\'es $\alpha$ et $\beta$, respectivement, d\'efinis comme~:
+\begin{align}
+d_{color}=\sqrt{\left(L_{\alpha}-L_{\beta}\right)^{2}+\left(A_{\alpha}-A_{\beta}\right)^{2}+\left(B_{\alpha}-B_{\beta}\right)^{2}}
+\end{align}
+\begin{align}
+d_{xy}=\sqrt{\left(x_{\alpha}-x_{\beta}\right)^{2}+\left(y_{\alpha}-y_{\beta}\right)^{2}}
+\end{align}
+\indent Ici, $(L,A,B)^{T}$ d\'enote les valeurs dans l'espace de couleurs CIELAB, $L$ \'etant la clart\'e de la couleur et $A$ et $B$ repr\'esentant des valeurs de couleurs le long des axes rouge-vert et bleu-jaune, respectivement.
+$(x,y)^{T}$ d\'enote les coordonn\'ees d'un pixel donn\'e.
+Une mesure de distance pond\'er\'ee finale $d_{\alpha\beta}$ peut \^{e}tre d\'efinie comme~:
+\begin{align}
+d_{\alpha,\beta}=\sqrt{d_{color}^{2}+m^{2}\left(\frac{d_{xy}}{s}\right)^{2}}
+\end{align}
+o\`u $s$ est la largeur des mailles.
+Elle r\'egit la taille des superpixels cr\'e\'es, c.\`a.d. que plus $s$ est grande, plus les superpixels sont grands.
+Un intervalle de maillage de taille \`a peu pr\`es \'egale peut \^{e}tre d\'efini comme $s=\sqrt{(Z/N)}$, o\`u $Z$ est le nombre total de pixels et $N$ est le nombre de superpixels souhait\'e.
+En r\'ealit\'e, le vrai nombre de superpixels g\'en\'er\'es (d\'efini comme $N^{'}$) pourrait \^{e}tre l\'eg\`erement diff\'erent de $N$.
+Le param\`etre $m$ contr\^{o}le l'importance relative entre la similarit\'e des couleurs et la proximit\'e spatiale.
+Plus $m$ est grand, plus l'accent est mis sur proximit\'e spatiale et la compacit\'e d'un superpixel g\'en\'er\'e.
+Une valeur courante de $m$ peut \^{e}tre d\'efinie \`a l'int\'erieur de la plage [1, 40].
+Pour plus de d\'etails, le lecteur pourra se reporter \`a l'article d'\citet{Achanta2012}.
+
+Afin de rehausser les variations spectrales dues aux bandes limit\'ees dans les images multispectrales, une analyse en composantes principales (PCA) est appliqu\'ee aux SCV d'origine.
+Celle-ci renforce la repr\'esentation des changements et \'etend l'espace d'attributs.
+Les trois premi\`eres composantes principales (c.\`a.d. les PC) sont utilis\'ees dans l'algorithme SLIC pour g\'en\'erer les segments (c.\`a.d. les superpixels) pr\'esentant les limites identifi\'ees.
+Ensuite, des SCV d'origine sont empil\'es avec les PC pour cr\'eer un ensemble d'attributs rehauss\'es (not\'e SCV-PC).
+Notons qu'une normalisation est effectu\'ee sur les bandes de SCV-PC pour rendre coh\'erente la plage dynamique des donn\'ees.
+Enfin, une op\'eration de moyenne est appliqu\'ee sur chaque segment dans les bandes de SCV-PC, le vecteur moyen \'etant utilis\'e pour remplacer les vecteurs d'origine de SCV-PC, afin d'obtenir la repr\'esentation des changements spectraux rehauss\'es au niveau des superpixels.
+On notera que, ce faisant, l'information de changements est concentr\'ee avec une coh\'erence spectrale--spatiale et le co\^{u}t en calculs est largement r\'eduit en comparaison du traitement par pixel d'origine.
+
+\subsubsection{D\'etermination de l'\'echelle optimale de segmentation}
+
+Comme mentionn\'e pr\'ec\'edemment, le nombre de superpixels $N$ et le facteur de compacit\'e $m$ doivent \^{e}tre d\'etermin\'es dans l'algorithme SLIC.
+Il est \`a noter que, dans les mises en {\oe}uvre pratiques, le param\`etre $m$ influe moins que $N$ sur les r\'esultats de segmentation.
+Par cons\'equent, apr\`es de multiples essais, nous avons fix\'e $m$ = 30 dans le pr\'esent travail.
+La question se r\'eduit \`a la determination du param\`etre $N$ d'\'echelle optimale de segmentation.
+\`A cette fin, une strat\'egie non supervis\'ee est appliqu\'ee d'apr\`es l' analyse de l'entropie globale.
+Notons qu'apr\`es l'op\'eration de moyenne sur chaque superpixel, l'information de texture pr\'esente dans les segments se trouve relativement att\'enu\'ee, ce qui peut avoir une influence sur les performances de CD par la suite.
+L'id\'ee principale du crit\`ere utilis\'e est d'\'evaluer l'information pr\'eserv\'ee dans l'image segment\'ee au niveau des superpixels, h\'erit\'ee de l'image d'origine au niveau des pixels.
+Ainsi, l'entropie unidimensionnelle de l'image (entropie globale, GE) \citep{Han2008} est calcul\'ee d'apr\`es des r\'esultats de segmentation multi-\'echelles, o\`u l'\'echelle optimale de segmentation est d\'etermin\'ee en analysant le changement de valeurs de GE~:
+\begin{align}
+GE=-\sum_{k=1}^{n}p_{k}\log p_{k}
+\end{align}
+o\`u $n$ d\'enote le niveau de gris et $p=(p_{k})_{k=1,2,\ldots,n}$ contient les comptages d'histogramme des trois premi\`eres bandes de $\textbf{Y}^{'}$.
+Il convient de noter qu'avec l'augmentation de \textit{N}, on s'attend \`a ce que les valeurs de GE augmentent de mani\`ere continue et s'approchent des valeurs de l'image d'origine.
+La fonction logarithmique est ensuite utilis\'e pour ajuster les r\'esultats de GE afin d'estimer le seuil pour l'\'echelle optimale de segmentation.
+Une description d\'etaill\'ee de cette \'etape est donn\'ee dans le Tableau~\ref{tab:GE}.
+
+\begin{Table}[ht]{D\'etermination de l'\'echelle optimale de segmentation d'apr\`es une analyse de GE\label{tab:GE}\vspace*{10pt}}
+\centering
+\begin{tabular}{|p{0.95\columnwidth}|}
+\hline
+\rowcolor{tabcol}\textbf{\'Etape 1}: initialiser $N$, qui est approxim\'e comme le plus petit parmi les lignes et les colonnes de l'image d'entr\'ee, et sp\'ecifier un intervalle d'\'echelle de segmentation approximativement \'egal \`a (ligne + colonne)/20.\tabularnewline
+\hline
+\rowcolor{tabcol}\textbf{\'Etape 2}: calculer la valeur de GE de chaque image segment\'ee sous diff\'erentes \'echelles de recherche.\tabularnewline
+\hline
+\rowcolor{tabcol}\textbf{\'Etape 3}: ajuster la fonction logarithmique sur les r\'esultats de GE obtenus et calculer le gradient.\tabularnewline
+\hline
+\rowcolor{tabcol}\textbf{\'Etape 4}: estimer l'\'echelle optimale de segmentation en analysant le gradient de valeurs de GE, le seuil de convergence $T_{GE}$ \'etant d\'efini comme approximativement \'egal \`a 100/(ligne + colonne) d'apr\`es l'image d'entr\'ee.\tabularnewline
+\hline
+\end{tabular}
+\end{Table}
+
+%%\vfill\eject
+%\clearpage
+
+\subsubsection{CD par fusion de d\'ecisions}
+
+\index{C-moyennes floues (FCM)} La CD multi-classes est mise en {\oe}uvre sur la base des variables d'amplitude et de direction des changements (c.\`a.d. $\rho$ et $\theta$) construites par S$^{2}$CVA au niveau des superpixels.
+En particulier, une \'etape de CD par fusion de d\'ecisions est propos\'ee pour rehausser et optimiser la sortie de la CD binaire (voir Figure \ref{fig:DF_block}), en analysant l'amplitude des changements des bandes de SCV-PC.
+Trois r\'esultats de CD binaire sont pris en compte sur la base d'un processus de vote majoritaire, pour d\'eterminer si un superpixel (segment) donn\'e est chang\'e ou non.
+La premi\`ere entr\'ee est issue du r\'esultat de CD binaire au niveau des pixels contraint par les fronti\`eres segment\'ees, o\`u un seuil $T_{\rho}$ est d\'efini sur $\rho$ en utilisant l'algorithme EM dans un cadre bay\'esien (dit EM bay\'esien) \citep{Bruzzone2000diff}.
+Les pixels chang\'es et inchang\'es sont compt\'es \`a l'int\'erieur de chaque superpixel, respectivement, afin de d\'eterminer l'\'etiquette du superpixel en question par rapport \`a la majorit\'e de comptage.
+Les deuxi\`eme et troisi\`eme entr\'ees sont g\'en\'er\'ees au niveau des superpixels.
+L'amplitude des changements de superpixels est calcul\'ee sur $\textbf{Y}^{'}$, et des r\'esultats de CD binaire sont obtenus en utilisant un seuillage EM bay\'esien et un clustering par C-moyennes floues (FCM), respectivement.
+Une d\'ecision par vote majoritaire \`a trois entr\'ees est appliqu\'ee en int\'egrant trois r\'esultats de CD binaire dans une perspective allant des pixels vers les superpixels.
+On notera que la d\'ecision finale de CD binaire est prise sur chaque superpixel, en fonction de l'\'etiquette majoritaire parmi trois entr\'ees ind\'ependantes, comme repr\'esent\'e sur la Figure \ref{fig:DF_block}.
+Un clustering FCM est alors appliqu\'e sur la variable $\theta$, mais ne porte que sur les superpixels chang\'es, le nombre estim\'e de groupements \'etant \'egal \`a $K$ dans le domaine polaire 2D compress\'e \textbf{\textit{D}}, comme repr\'esent\'e sur la Figure \ref{fig:2Dpolar}.
+
+\section{Description du jeu de donn\'ees et configuration exp\'erimentale}
+
+\label{sec:Data}
+
+\subsection{Description du jeu de donn\'ees}
+
+\label{subsec:Dataset} Le premier jeu de donn\'ees est une paire d'images QuickBird acquises au-dessus d'une zone urbaine dans la ville de Xuzhou, province de Jiangsu (Chine), respectivement en septembre 2004 (\textbf{X}$_{1}$) et mai 2005 (\textbf{X}$_{2}$).
+L'algorithme d'affinage panchromatique de Gram--Schmidt (G-S) a \'et\'e appliqu\'e pour fusionner les images multispectrales (2,4 m) et panchromatiques (0,6 m), afin de g\'en\'erer le jeu de donn\'ees fusionn\'e final (0,6 m) comprenant quatre bandes spectrales (\`a savoir rouge, vert, bleu et proche infrarouge).
+Les images ont fait l'objet d'une correction radiom\'etrique et d'un recalage (avec une erreur r\'esiduelle de recalage d'environ 0,3 pixel), et la r\'egion finale d'une taille de 760$\times$370 pixels a \'et\'e extraite pour l'exp\'erience de CD.
+Un total de six classes de changements est pr\'esent\'e dans ce sc\'enario.
+Les transitions de classes d\'etaill\'ees sont~: 1) terre vers zone b\^{a}tie (C1)~; 2) terre vers toit (face au soleil) (C2)~; 3) terre vers toit (dos au soleil) (C3)~; 4) zone b\^{a}tie vers terre (C4)~; 5) ombre vers terre (C5)~; 6) arbres vers terre (C6).
+Les images composites en fausses couleurs \textbf{X}$_{1}$ et \textbf{X}$_{2}$ sont repr\'esent\'ees sur la Figure \ref{fig:Xuzhoudatset} (a) et (b), respectivement, et la Figure \ref{fig:Xuzhoudatset} (c) pr\'esente la carte de r\'ef\'erence de changements obtenue par une interpr\'etation minutieuse des images.
+%\begin{landscape}
+\vspace*{30pt}
+\begin{Figure}[!htbp] {Illustration de l'\'etape de CD binaire bas\'ee sur une fusion au niveau de la d\'ecision.
+\break Pour une version en couleurs de cette figure, voir www.iste.co.uk/atto/change1.zip\label{fig:DF_block}}
+\centering \includegraphics[angle=90, origin=bl, height=0.975\textheight]{Figures/DF_block.eps}
+%\centering \includegraphics[width=1.3\textwidth]{Figures/DF_block.eps}
+\end{Figure}
+%\end{landscape}
+
+\makeatletter
+\def\@Mymakecaption#1#2{%
+    % #1 est p.ex. Figure 1 ou Tableau 1, #2 est la légende de la figure
+   \if@bigcaption
+   \parbox[t]{16cm}{%
+      \centering\FonteTypeLegende\rule{0pt}{14.2pt}% 8 pts au dessus
+       #1\hspace{3pt}\FonteTitreLegende #2}
+   \else
+   \parbox[t]{12cm}{%
+      \centering\FonteTypeLegende\rule{0pt}{14.2pt}% 8 pts au dessus
+       #1\hspace{3pt}\FonteTitreLegende #2}
+   \fi
+   }%
+\makeatother
+
+%\begin{landscape}
+\vspace*{50pt}
+\begin{Figure}[!htbp]{Composite couleur-infrarouge d'images QuickBird bi-temporelles \break apr\`es affinage panchromatique (bandes 4, 3, 2) au-dessus d'une zone urbaine dans la ville de Xuzhou, \break acquises en (a) 2004 ($\textbf{X}_{1}$) et (b) 2005 ($\textbf{X}_{2}$).
+(c) Carte de r\'ef\'erence de changements.
+\break Pour une version en couleurs de cette figure, voir www.iste.co.uk/atto/change1.zip\label{fig:Xuzhoudatset}}
+\centering %
+%\raisebox{0.5\textheight}{\rotatebox{90}{
+\begin{tabular}{c@{~}c@{~}c}
+\fbox{\includegraphics[width=0.325\linewidth]{Figures/Xuzhou2004.eps}} & %
+\fbox{\includegraphics[width=0.325\linewidth]{Figures/Xuzhou2005.eps}} & %
+\fbox{\includegraphics[width=0.325\linewidth]{Figures/Xuzhouref.eps}}\tabularnewline
+(a) & (b) & (c)\tabularnewline
+\multicolumn{3}{c}{\includegraphics[width=0.98\linewidth]{Figures/Xuzhoulegend.eps}}\tabularnewline
+\end{tabular}
+%}}
+\end{Figure}
+%\end{landscape}
+
+\rotatebox{45}{\raisebox{\height}{somestuff}}
+
+\makeatletter
+\def\@Mymakecaption#1#2{%
+    % #1 est p.ex. Figure 1 ou Tableau 1, #2 est la légende de la figure
+   \if@bigcaption
+   \parbox[t]{18cm}{%
+      \centering\FonteTypeLegende\rule{0pt}{14.2pt}% 8 pts au dessus
+       #1\hspace{3pt}\FonteTitreLegende #2}
+   \else
+   \parbox[t]{12cm}{%
+      \centering\FonteTypeLegende\rule{0pt}{14.2pt}% 8 pts au dessus
+       #1\hspace{3pt}\FonteTitreLegende #2}
+   \fi
+   }%
+\makeatother
+
+%\begin{landscape}
+\vspace*{20pt}
+\begin{Figure}[!htbp]{Composite en fausses couleurs d'images QuickBird du jeu de donn\'ees \break sur le tsunami en Indon\'esie, acquises en~: (a) avril 2004 (avant le tsunami), (b) janvier 2005 (apr\`es le tsunami)~; \break (c) et (d) sont deux sous-ensembles selectionn\'es \`a partir de la sc\`ene enti\`ere dans l'analyse exp\'erimentale qualitative. (e) \'Echantillons de r\'ef\'erence de changements.
+\break Pour une version en couleurs de cette figure, voir www.iste.co.uk/atto/change1.zip\label{fig:Tsunamidatset}}
+\centering %
+\begin{tabular}{c}
+\includegraphics[width=0.99\linewidth]{Figures/Tsunami_img.eps}\tabularnewline
+\end{tabular}\\%
+\begin{tabular}{m{.2\textwidth}<{\centering}m{.2\textwidth}<{\centering}m{.2\textwidth}<{\centering}m{.1\textwidth}<{\centering}m{.2\textwidth}<{\centering}}
+(a) & (b) & (c) & (d) & (e)\tabularnewline
+\end{tabular}\\%
+\begin{tabular}{c}
+\includegraphics[width=0.99\linewidth]{Figures/Tsunamilegend.eps}\\\tabularnewline
+\end{tabular}\\[-6pt]
+\end{Figure}
+%\end{landscape}
+
+\makeatletter
+\def\@Mymakecaption#1#2{%
+    % #1 est p.ex. Figure 1 ou Tableau 1, #2 est la légende de la figure
+   \if@bigcaption
+   \parbox[t]{12cm}{%
+      \FonteTypeLegende\rule{0pt}{14.2pt}% 8 pts au dessus
+       \centering#1\hspace{3pt}\FonteTitreLegende #2}
+   \else
+   \parbox[t]{12cm}{%
+      \centering\FonteTypeLegende\rule{0pt}{14.2pt}% 8 pts au dessus
+       #1\hspace{3pt}\FonteTitreLegende #2}
+   \fi
+   }%
+\makeatother
+
+Le deuxi\`eme jeu de donn\'ees est constitu\'e d'une paire d'images multispectrales QuickBird recal\'ees d'une r\'esolution spatiale de 2,4 m, acquises au-dessus d'une vaste zone c\^{o}ti\`ere en Indon\'esie, respectivement en avril 2004 et janvier 2005 (voir les deux dates des images composites en fausses couleurs repr\'esent\'ees sur la Figure \ref{fig:Tsunamidatset}(a) and (b), respectivement).
+La totalit\'e de la zone d'\'etude consid\'er\'ee pr\'esente une taille de 3250$\times$4350 pixels.
+Deux sous-ensembles ont \'et\'e selectionn\'es pour une analyse qualitative d\'etaill\'ee, comme repr\'esent\'e sur la Figure \ref{fig:Tsunamidatset}(c) et (d).
+Une carte d'\'echantillons de r\'ef\'erence de changements a \'et\'e cr\'e\'ee par une interpr\'etation minutieuse des images (Figure \ref{fig:Tsunamidatset}(e)).
+Les changements survenus dans cette sc\'ene ont \'et\'e caus\'es principalement par le tsunami de d\'ecembre 2004, et comprennent les classes suivantes~: (1) v\'eg\'etation vers secteur inond\'e (C1)~; (2) for\^{e}t vers secteur inond\'e (C2)~; (3) ombre vers v\'eg\'etation (C3)~; (4) ombre vers for\^{e}t (C4)~;\break {\spaceskip=.22em plus .1em minus .1em (5) terrain nu vers secteur inond\'e (C5)~; (6) nuages vers for\^{e}t (C6)~; (7) for\^{e}t vers ombre (C7).}
+
+\subsection{Configuration exp\'erimentale}
+
+\label{subsec:Expset}
+
+\index{Analyse morphologique multi-\'echelles de vecteurs de changements compress\'es (M$^{2}$C$^{2}$VA)}
+\index{Analyse au niveau des superpixels de vecteurs de changements compress\'es (SPC$^{2}$VA)}
+\index{D\'etection multivari\'ee de changements \`a repond\'eration it\'erative (IR-MAD)}
+\index{Analyse s\'equentielle de vecteurs de changements spectraux (S$^{2}$CVA)}Pour les besoins de la comparaison, des r\'esultats de CD obtenus par les approches M$^{2}$C$^{2}$VA et SPC$^{2}$VA propos\'ees ont \'et\'e compar\'es \`a deux techniques de pointe en CD non supervis\'ee multi-classes, \`a savoir la d\'etection multivari\'ee de changements \`a repond\'eration it\'erative (IR-MAD) \citep{Nielsen2007IRMAD}, et l'analyse s\'equentielle de vecteurs de changements spectraux (S$^{2}$CVA) \citep{Liu2015S2CVA}.
+Notons que la M$^{2}$C$^{2}$VA et la SPC$^{2}$VA prenaient en consid\'eration \`a la fois les informations de changements spectraux et spatiaux, alors que l'IR-MAD et la S$^{2}$CVA ne prenaient en consid\'eration que les informations de changements spectraux.
+Des analyses quantitatives et qualitatives d\'etaill\'ees ont \'et\'e men\'ees d'apr\`es la pr\'ecision de CD obtenue, c.\`a.d. OA et Kappa, et les indices d'erreurs, c.\`a.d. les erreurs d'omission (OE), les erreurs de commission (CE), les erreurs totales (TE), et les cartes de CD obtenues.
+De plus, le co\^{u}t en calculs a \'egalement \'et\'e pris en consid\'eration dans chaque m\'ethode et compar\'e.
+Toutes les exp\'eriences ont \'et\'e r\'ealis\'ees \`a l'aide de MATLAB R2016b, sur un PC avec CPU Intel(R) Core (TM) i7-6700 \`a 3,40GHz dot\'e de 32 Go de RAM. \index{Pr\'ecision globale (OA)}
+\index{Coefficient Kappa (Kappa)} \index{Erreurs d'omission (OE)} \index{Erreurs de commission (CE)}
+\index{Caract\'eristique de performance du test (ROC)} \index{Aire sous la courbe, Aire sous la courbe de ROC (AUC)}
+\index{Total Errors (TE)}
+
+\begin{Figure}[!h] {Repr\'esentation 2D de changements compress\'es dans le domaine polaire (jeu de donn\'ees de Xuzhou). Pour une version en couleurs de cette figure, voir www.iste.co.uk/atto/change1.zip\label{fig:2DpolarXuzhou}}
+\centering \includegraphics[width=0.8\textwidth]{Figures/2DpolarXuzhou.eps}
+\end{Figure}
+
+%\begin{landscape}
+\vspace*{15pt}
+\begin{Figure}[!htbp]{Determination de l'\'echelle optimale de segmentation dans le jeu de donn\'ees de Xuzhou.
+(a) Valeurs de GE de diff\'erentes \'echelles segment\'ees~; (b) R\'esultats d'ajustement logarithmique bas\'es sur (a). Pour une version en couleurs de cette figure, voir www.iste.co.uk/atto/change1.zip\label{fig:GE_Xuzhou}}
+\centering %
+\begin{tabular}{c@{~}c@{~}}
+\includegraphics[width=0.48\linewidth]{Figures/GE_Xuzhou_a.eps} & \includegraphics[width=0.48\linewidth]{Figures/GE_Xuzhou_b.eps}\tabularnewline
+(a) & (b)\tabularnewline
+\end{tabular}
+\end{Figure}
+%\end{landscape}
+
+\section{R\'esultats et discussion}
+
+\label{sec:Results}
+
+\subsection{R\'esultats sur le jeu de donn\'ees de Xuzhou}
+
+La repr\'esentation 2D de changements compress\'es dans le domaine polaire est illust\'ee sur la Figure~\ref{fig:2DpolarXuzhou}, o\`u six groupements de changements peuvent \^{e}tre observ\'es, indiquant des directions de changements diff\'erentes.
+$K$ = 6 est donc fix\'e dans les m\'ethodes de CD consid\'er\'ees pour effectuer la CD multi-classes.
+
+
+
+L'\'echelle optimale de segmentation a \'et\'e estim\'ee en analysant les valeurs de GE (voir Figure \ref{fig:GE_Xuzhou}(a)) et ses r\'esultats d'ajustement logarithmique (voir Figure \ref{fig:GE_Xuzhou}(b)).
+Le $T_{GE}$ a \'et\'e calcul\'e et d\'efini comme $1\times 10^{-4}$, puis l'\'echelle optimale de segmentation finale a \'et\'e obtenue comme 1160.
+
+
+
+%{\spaceskip=.26em plus .1em minus .1em
+\`A partir des analyses quantitatives et qualitatives d\'etaill\'ees bas\'ees sur la pr\'ecision de CD obtenue et les indices d'erreurs (voir Tableau \ref{tab:MCD_accuracy}) et des cartes de CD obtenues (voir Figure \ref{fig:CDmaps_Xuzhou}), on peut observer que les approches M$^{2}$C$^{2}$VA et SPC$^{2}$VA propos\'ees ont donn\'e des performances sup\'erieures \`a celles des m\'ethodes de r\'ef\'erence, par rapport aux valeurs plus \'elev\'ees de OA et Kappa et aux erreurs de d\'etection plus petites (voir Tableau \ref{tab:MCD_accuracy}).
+En particulier, la SPC$^{2}$VA a atteint la plus haute pr\'ecision (\`a savoir OA = 92.74\% et Kappa = 0.7464), surpassant les autres m\'ethodes.
+Une am\'elioration peut \'egalement \^{e}tre observ\'ee d'apr\`es les cartes de changements obtenues en les comparant \`a la carte de r\'ef\'erence~;
+les cibles de changement identifi\'ees sont plus exactes dans les deux approches propos\'ees (c.\`a.d. Figure \ref{fig:CDmaps_Xuzhou}(c) and (d)) que celles des deux m\'ethodes de r\'ef\'erence (c.\`a.d. Figure \ref{fig:CDmaps_Xuzhou}(a) and (b)).
+Parmi les deux m\'ethodes de r\'ef\'erence, la S$^{2}$CVA s'est montr\'ee plus performante que l'IR-MAD.
+Quant au co\^{u}t en calculs, l'approche SPC$^{2}$VA propos\'ee a montr\'e une bonne performance, en prenant moins de temps que la M$^{2}$C$^{2}$VA propos\'ee et l'IR-MAD, et un temps similaire ou l\'eg\`erement plus long que la S$^{2}$CVA (soit 8,91~s contre 7,12~s), mais donnant une valeur d'OA nettement sup\'erieure (soit 92,74\% contre 87,74\%).
+%}
+
+\begin{Table}[!h]{R\'esultats de CD multi-classes obtenus par les\break m\'ethodes propos\'ees et de r\'ef\'erence (jeu de donn\'ees de Xuzhou)\label{tab:MCD_accuracy}}
+\renewcommand{\arraystretch}{1.1}
+{\centering
+\addtolength{\tabcolsep}{1pt} }%
+\footnotesize
+\begin{tabular}{|h|h|h|h|h|h|h|h|}
+\hline
+\rowhead \TCH{Niveau de traitement} & \multirow{1}{*}{\TCH{M\'ethodes de CD}} & \TCH{\textit{OA}} & \multirow{1}{*}{\TCH{\textit{Kappa}}} & \TCH{\textit{CE}} & \TCH{{\textit{OE}}} & \TCH{\textit{TE}} & \TCH{\textit{Co\^{u}t en temps}}\tabularnewline
+\rowhead {\ }\TCH{(Attributs)} &  & \TCH{{\%}} &  & \TCH{(\textit{pixels})} & \TCH{(\textit{pixels})} & \TCH{(\textit{pixels})} & \TCH{(\textit{s})}\tabularnewline
+\hline
+\textbf{Niveau des pixels} & {IR-MAD} & {85,23} & {0,5900} & {41524} & {17256} & {58780} & {9,82}\tabularnewline
+\rowcolor{tabcol}{\ }\textbf{(Spectraux)} & {S$^{2}$CVA} & {87,74} & {0,6390} & {28532} & {16397} & {44929} & {7,12}\tabularnewline
+\hline
+\textbf{Niveau des pixels} & {M$^{2}$C$^{2}$VA propos\'ee} &  &  &  & & & \tabularnewline
+{\ }\textbf{(Spectraux--spatiaux)} & {([$u,v$] = [1, 6])} & \multirow{-2}{*}{{91,86}} & \multirow{-2}{*}{{0,7169}} & \multirow{-2}{*}{{11316}} & \multirow{-2}{*}{{17455}} & \multirow{-2}{*}{{28771}}  &\multirow{-2}{*}{{18,30}} \tabularnewline
+\hline
+\textbf{Niveau des superpixels)} & {SPC$^{2}$VA propos\'ee} & &  & & & & \tabularnewline
+{\ }\textbf{(Spectraux--spatiaux)} & {($N$= 1160, $m$ = 30)} & \multirow{-2}{*}{{92,74}}  &\multirow{-2}{*}{{0,7464}}  &\multirow{-2}{*}{{8673}}  &\multirow{-2}{*}{{16411}}  & \multirow{-2}{*}{{25084}} & \multirow{-2}{*}{{8,91}}\tabularnewline
+\hline
+\end{tabular}
+\end{Table}
+
+\subsection{R\'esultats sur le jeu de donn\'ees du tsunami d'Indon\'esie}
+
+La repr\'esentation 2D de changements compress\'es dans le domaine polaire est illustr\'ee sur la Figure \ref{fig:2DpolarTsunami}, o\`u l'on peut observer sept groupes de changement (c.\`a.d. $K$ = 7).
+L'\'echelle optimale de segmentation a \'et\'e estim\'ee \`a 35140 selon la Figure \ref{fig:GE_Tsunami}.
+Notons que l'exp\'erience de CD et l'analyse quantitative ont \'et\'e r\'ealis\'ees sur la totalit\'e de la sc\`ene.
+
+\makeatletter
+\def\@Mymakecaption#1#2{%
+    % #1 est p.ex. Figure 1 ou Tableau 1, #2 est la légende de la figure
+   \if@bigcaption
+   \parbox[t]{12cm}{%
+      \FonteTypeLegende\rule{0pt}{14.2pt}% 8 pts au dessus
+       #1\hspace{3pt}\FonteTitreLegende #2}
+   \else
+   \parbox[t]{12cm}{%
+      \FonteTypeLegende\rule{0pt}{14.2pt}% 8 pts au dessus
+       #1\hspace{3pt}\FonteTitreLegende #2}
+   \fi
+   }%
+\makeatother
+
+\begin{Figure}[!htb]{Comparaison des cartes de CD multi-classes obtenues par~: (a) IR-MAD~; (b) S$^{2}$CVA~; (c) M$^{2}$ C$^{2}$VA propos\'ee ([$u,v$] = [1, 6])~; (d) SPC$^{2}$VA propos\'ee avec\break $N$ = 1160 et $m$ = 30 (jeu de donn\'ees de Xuzhou).
+\break Pour une version en couleurs de cette figure, voir www.iste.co.uk/atto/change1.zip\label{fig:CDmaps_Xuzhou}}
+\centering %
+\begin{tabular}{c@{~}c@{~}}
+\fbox{\includegraphics[width=0.49\linewidth]{Figures/IRMAD_Xuzhou.eps}} & %
+\fbox{\includegraphics[width=0.49\linewidth]{Figures/S2CVA_Xuzhou.eps}}\tabularnewline
+(a) & (b)\tabularnewline
+\fbox{\includegraphics[width=0.49\linewidth]{Figures/M2C2VA_Xuzhou.eps}} & %
+\fbox{\includegraphics[width=0.49\linewidth]{Figures/SuperC2VA_Xuzhou.eps}}\tabularnewline
+(c) & (d)\tabularnewline
+\end{tabular}
+\end{Figure}
+
+\makeatletter
+\def\@Mymakecaption#1#2{%
+    % #1 est p.ex. Figure 1 ou Tableau 1, #2 est la légende de la figure
+   \if@bigcaption
+   \parbox[t]{12cm}{%
+      \FonteTypeLegende\rule{0pt}{14.2pt}% 8 pts au dessus
+       \centering#1\hspace{3pt}\FonteTitreLegende #2}
+   \else
+   \parbox[t]{12cm}{%
+      \centering\FonteTypeLegende\rule{0pt}{14.2pt}% 8 pts au dessus
+       #1\hspace{3pt}\FonteTitreLegende #2}
+   \fi
+   }%
+\makeatother
+
+\begin{Figure}[!htb]{Repr\'esentation 2D de changements compress\'es dans le domaine polaire\break (jeu de donn\'ees du tsunami d'Indon\'esie).
+\break Pour une version en couleurs de cette figure, voir www.iste.co.uk/atto/change1.zip\label{fig:2DpolarTsunami}}
+\centering \includegraphics[width=0.8\textwidth]{Figures/2DpolarTsunami.eps}
+\end{Figure}
+
+\makeatletter
+\def\@Mymakecaption#1#2{%
+    % #1 est p.ex. Figure 1 ou Tableau 1, #2 est la légende de la figure
+   \if@bigcaption
+   \parbox[t]{17cm}{%
+      \FonteTypeLegende\rule{0pt}{14.2pt}% 8 pts au dessus
+       #1\hspace{3pt}\FonteTitreLegende #2}
+   \else
+   \parbox[t]{17cm}{%
+      \centering\FonteTypeLegende\rule{0pt}{14.2pt}% 8 pts au dessus
+       #1\hspace{3pt}\FonteTitreLegende #2}
+   \fi
+   }%
+\makeatother
+
+%\begin{landscape}
+\vspace*{20pt}
+\begin{Figure}[!htbp]{D\'etermination de l'\'echelle optimale de segmentation dans le jeu de donn\'ees du tsunami d'Indon\'esie.\break (a) valeurs de GE de diff\'erentes \'echelles segment\'ees~; (b) r\'esultats d'ajustement logarithmique bas\'es sur (a).\break Pour une version en couleurs de cette figure, voir www.iste.co.uk/atto/change1.zip\label{fig:GE_Tsunami}}
+\centering %
+\begin{tabular}{c@{~}c@{~}}
+\includegraphics[width=0.495\linewidth]{Figures/GE_Tsunami_a.eps} & \includegraphics[width=0.495\linewidth]{Figures/GE_Tsunami_b.eps}\tabularnewline
+(a) & (b)\tabularnewline
+\end{tabular}
+\end{Figure}
+%\end{landscape}
+
+\makeatletter
+\def\@Mymakecaption#1#2{%
+    % #1 est p.ex. Figure 1 ou Tableau 1, #2 est la légende de la figure
+   \if@bigcaption
+   \parbox[t]{12cm}{%
+      \FonteTypeLegende\rule{0pt}{14.2pt}% 8 pts au dessus
+       #1\hspace{3pt}\FonteTitreLegende #2}
+   \else
+   \parbox[t]{12cm}{%
+      \centering\FonteTypeLegende\rule{0pt}{14.2pt}% 8 pts au dessus
+       #1\hspace{3pt}\FonteTitreLegende #2}
+   \fi
+   }%
+\makeatother
+
+Nous avons proc\'ed\'e \`a une comparaison minutieuse entre les r\'esultats qualitatifs et quantitatifs obtenus par deux approches propos\'ees (voir les cartes de CD de la Figure \ref{fig:CDmaps_Tsunami}(c) and (d)) et deux m\'ethodes de r\'ef\'erence (voir les cartes de CD sur la Figure \ref{fig:CDmaps_Tsunami}(a) et (b)) comme dans le jeu de donn\'ees pr\'ec\'edent.
+L'\'evaluation quantitative a \'et\'e r\'ealis\'ee sur la base des \'echantillons de r\'ef\'erence des changements disponibles, comme repr\'esent\'e sur la Figure \ref{fig:Tsunamidatset}(e)~; les r\'esultats num\'eriques sont donn\'es dans le Tableau \ref{tab:Tsunami_MCD_accuracy}.
+Notons que le nombre de changements multi-classes \'etait \'egal \`a 7 dans toutes les m\'ethodes, tel qu'estim\'e dans le domaine polaire (voir Figure \ref{fig:2DpolarTsunami}).
+
+\index{Pr\'ecision globale (OA)} \index{Coefficient Kappa (Kappa)}
+\index{Erreurs d'omission (OE)} \index{Erreurs de commission (CE)} \index{Total Errors (TE)}
+\index{Analyse morphologique multi-\'echelles de vecteurs de changements compress\'es (M$^{2}$C$^{2}$VA)}
+\index{Analyse au niveau des superpixels de vecteurs de changements compress\'es (SPC$^{2}$VA)}
+\index{D\'etection multivari\'ee de changements \`a repond\'eration it\'erative (IR-MAD)}
+\index{Analyse s\'equentielle de vecteurs de changements spectraux (S$^{2}$CVA)}
+
+\begin{Table}{R\'esultats de CD multi-classes obtenus par les m\'ethodes propos\'ees et de r\'ef\'erence (jeu de donn\'ees du tsunami d'Indon\'esie)\label{tab:Tsunami_MCD_accuracy}}
+\footnotesize
+\addtolength{\tabcolsep}{1pt}%
+\begin{tabular}{|h|h|h|h|h|h|h|h|}
+\hline
+\rowhead\TCH{Niveau de traitement} & \multirow{1}{*}{\TCH{M\'ethodes de CD}} & \TCH{\textit{OA}} & \multirow{1}{*}{\TCH{\textit{Kappa}}} & \TCH{\textit{CE}} & \TCH{\textit{OE}} & \TCH{\textit{TE}} & \TCH{\textit{Co\^{u}t en temps}}\tabularnewline
+\rowhead{\ }\TCH{(Attributs)} &  & {\%} &  & \TCH{(\textit{pixels})} & \TCH{(\textit{pixels})} & \TCH{(\textit{pixels})} & {\TCH{(\textit{s})}}\tabularnewline
+\hline
+\textbf{Niveau des pixels} & {IR-MAD} & {81,09} & {0,4578} & {447773} & {460876} & {908649} & {566,58}\tabularnewline
+{\ }\textbf{(Spectral)} & {S$^{2}$CVA} & {86,04} & {0,6044} & {407410} & {398629} & {806039} & {466,97}\tabularnewline
+\hline
+\textbf{Niveau des pixels} & {M$^{2}$C$^{2}$VA} propos\'ee &  &  &  &  &  &\tabularnewline
+{\ }\textbf{(Spectraux--spatiaux)} & {([$u,v$] = [1, 6])} & \multirow{-2}{*}{{91,15}} & \multirow{-2}{*}{{0,7298}} & \multirow{-2}{*}{{202919}} & \multirow{-2}{*}{{314088}} & \multirow{-2}{*}{{517007}} & \multirow{-2}{*}{{691,44}}\tabularnewline
+\hline
+\textbf{Niveau des superpixels} & {SPC$^{2}$VA \ } propos\'ee &  &  &  &  &  & \tabularnewline
+{\ }\textbf{(Spectraux--spatiaux)} & {($N$= 35140, $m$ = 30)}& \multirow{-2}{*}{{93,69}} & \multirow{-2}{*}{{0,8038}} & \multirow{-2}{*}{{135863}} & \multirow{-2}{*}{{225979}} & \multirow{-2}{*}{{361842}} & \multirow{-2}{*}{{667,38}} \tabularnewline
+\hline
+\end{tabular}
+\end{Table}
+
+\begin{Figure}{Comparaison des cartes de CD obtenues par~: (a) IR-MAD~; (b) S$^{2}$CVA~;\break (c) M$^{2}$C$^{2}$VA propos\'ee ([$u,v$] = [1, 6]~; (d) SPC$^{2}$VA propos\'ee avec $N$ = 35140 et\break $m$ = 30, respectivement, o\`u la premi\`ere rang\'ee est la sc\'ene d'image enti\`ere, et les deuxi\`eme et troisi\`eme rang\'ees repr\'esentent deux sous-ensembles de r\'esultats \`a des fins de comparaison visuelle d\'etaill\'ee (jeu de donn\'ees du tsunami d'Indon\'esie). Pour une version en couleurs de cette figure, voir www.iste.co.uk/{\break}atto/change1.zip\label{fig:CDmaps_Tsunami}}
+\centering %
+\begin{tabular}{cccc}
+\includegraphics[width=0.235\linewidth]{Figures/Tsunami_CDmap_a.eps} & \includegraphics[width=0.235\linewidth]{Figures/Tsunami_CDmap_b.eps} & \includegraphics[width=0.235\linewidth]{Figures/Tsunami_CDmap_c.eps} & \includegraphics[width=0.235\linewidth]{Figures/Tsunami_CDmap_d.eps}\tabularnewline
+(a) & (b) & (c) & (d)\tabularnewline
+\end{tabular}\vspace*{5pt}
+\end{Figure}
+
+D'apr\`es les cartes de CD repr\'esent\'ees \`a l'\'echelle globale (premi\`ere rang\'ee) et \`a l'\'echelle locale (deuxi\`eme et troisi\`eme rang\'ees) sur la Figure \ref{fig:CDmaps_Tsunami} et les pr\'ecisions de CD du Tableau \ref{tab:Tsunami_MCD_accuracy}, on peut voir que l'approche propos\'ee SPC$^{2}$VA a obtenu la plus haute pr\'ecision (c.\`a.d. OA~: 93,69\% et Kappa~: 0,8244) parmi toutes les m\'ethodes consid\'er\'ees.
+La M$^{2}$C$^{2}$VA propos\'ee a \'egalement donn\'e de bons r\'esultats et surpass\'e les performances des deux m\'ethodes de r\'ef\'erence.
+Des erreurs de d\'etection plus faibles ont \'et\'e constat\'ees (\`a savoir  361842 et 517007 pixels dans les deux approches propos\'ees contre 908649 et 806039 pixels dans les deux m\'ethodes de r\'ef\'erence), en particulier les valeurs de CE.
+Les cibles de changement d\'etect\'ees sont plus homog\`enes et reguli\`eres par rapport \`a leurs formes et \`a leurs r\'epartitions spatiales (voir Figure \ref{fig:CDmaps_Tsunami}(c) and (d)).
+Ceci d\'emontre que les approches spectrales--spatiales propos\'ees sont capables de traiter une CD pour des donn\'ees \`a grande \'echelle et offrent des performances de d\'etection \'elev\'ees, c.\`a.d. qu'elles accentuent les cibles de changement et att\'enuent la classe sans changement.
+Concernant les deux m\'ethodes de r\'ef\'erence par pixels, la S$^{2}$CVA a mieux fonctionn\'e que l'IR-MAD car, dans les r\'esultats d'IR-MAD, les pixels avec et sans changements sont fortement m\'elang\'es dans leur repr\'esentation spectrale, d'o\`u une pr\'ecision de d\'etection relativement m\'ediocre.
+Ceci est d\^{u} \`a la complexit\'e de la t\^{a}che de CD dans les images multispectrales \`a haute r\'esolution spatiale, et l'analyse de corr\'elation par pixels pourrait ne pas mod\'eliser correctement les changements cibl\'es en se basant uniquement sur l'information spectrale.
+Du point de vue du co\^{u}t en calculs, les deux m\'ethodes propos\'ees ont donn\'e lieu \`a un co\^{u}t en temps sup\'erieur \`a celui des deux m\'ethodes de r\'ef\'erence, mais restant \`a un niveau acceptable.
+Par cons\'equent, d'apr\`es l'analyse qualitative minutieuse, tant \`a \'echelle globale que locale, des cartes de CD obtenues et l'analyse  quantitative de pr\'ecision, l'efficacit\'e des approches propos\'ees pour traiter un grand probl\`eme complexe de CD multiple est valid\'ee.
+
+\section{Conclusion}
+
+\label{sec:Conclusion}
+
+Du fait de sa nature automatique et non supervis\'ee, la CD non supervis\'ee repr\'esente toujours une fronti\`ere tr\`es int\'eressante et importante pour la recherche et les applications en CD.
+Cependant, l'absence de r\'ef\'erence de terrain et de connaissances pr\'ealables rend ce probl\`eme pratique plus d\'elicat et complexe que ses homologues supervis\'es.
+Dans ce chapitre, nous avons pass\'e en revue le d\'eveloppement actuel de m\'ethodes de CD non supervis\'ee dans des images multitemporelles multispectrales de t\'el\'ed\'etection, et analys\'e les questions non r\'esolues et les d\'efis existants.
+En particulier, nous nous sommes concentr\'es sur la perspective spectrale--spatiale pour trouver des solutions robustes \`a l'important probl\`eme de la CD multi-classes.
+En cons\'equence, deux approches ont \'et\'e propos\'ees, \`a savoir la M$^{2}$C$^{2}$VA et la SPC$^{2}$VA.
+En tirant parti de l'analyse jointe spectrale et spatiale sur la repr\'esentation des changements multispectraux, les performances d'origine de la CD au niveau des pixels ont \'et\'e am\'elior\'ees en consid\'erant \`a la fois la variation spectrale \`a l'\'echelle globale et l'homog\'en\'eit\'e spectrale et la connectivit\'e et la regularit\'e spatiales de cibles de changement \`a l'\'echelle locale.
+Des r\'esultats exp\'erimentaux obtenus sur deux jeux de donn\'ees multispectrales r\'eelles, couvrant un sc\'enario urbain complexe et un sc\'enario de catastrophe de type tsunami \`a grande \'echelle, ont confirm\'e l'efficacit\'e des approches propos\'ees en termes de pr\'ecision de CD sup\'erieure et d'efficacit\'e calculatoire, lorsqu'on les compare aux m\'ethodes de r\'ef\'erence.
+Pour les travaux \`a venir, des techniques avanc\'ees restent \`a concevoir pour traiter des cas r\'eels plus complexes de CD non supervis\'ee, en se focalisant principalement, mais pas exclusivement, sur les questions non r\'esolues et les d\'efis indiqu\'es au paragraphe \ref{subsec:Challenges}.
+
+\section{Remerciements}
+
+Ce travail \'etait soutenu par la Fondation de Chine pour les sciences naturelles dans le cadre de l'allocation 42071324, 41601354, et par le programme Rising-Star de Shanghai (21QA1409100).
+
+\begin{thebibliography}{xx}
+
+\harvarditem[{Achanta} \emph{et~al}.]{{Achanta}, {Shaji}, {Smith}, {Lucchi},
+  {Fua} and {S\"{u}sstrunk}}{2012}{Achanta2012}
+Achanta, R., Shaji, A., Smith, K., Lucchi, A., Fua, P., Süsstrunk, S.
+(2012). Slic superpixels compared to state-of-the-art superpixel
+methods. \emph{IEEE Transactions on Pattern Analysis and Machine
+Intelligence}, 34(11), 2274--2282.
+
+\harvarditem{Ban and Yousif}{2016}{Ban2016}
+Ban, Y. and Yousif, O. (2016). \emph{Change Detection Techniques: A
+Review}. Springer International Publishing, Cham.
+
+\harvarditem[{Bazi} \emph{et~al}.]{{Bazi}, {Bruzzone} and {Melgani}}{2005}{Bazi2005}
+Bazi, Y., Bruzzone, L., Melgani, F. (2005). An unsupervised approach
+based on the generalized Gaussian model to automatic change detection in
+multitemporal SAR images. \emph{IEEE Transactions on Geoscience and
+Remote Sensing}, 43(4),~874--887.
+
+\harvarditem[{Benediktsson} \emph{et~al}.]{{Benediktsson}, {Palmason} and
+  {Sveinsson}}{2005}{Benediktsson2005}
+Benediktsson, J.A., Palmason, J.A., Sveinsson, J.R. (2005).
+Classification of hyperspectral data from urban areas based on extended
+morphological profiles. \emph{IEEE Transactions on Geoscience and Remote
+Sensing}, 43(3),~480--491.
+
+\harvarditem[Bouziani \emph{et~al}.]{Bouziani, Go\"{i}ta and
+  He}{2010}{Bouziani2010}
+Bouziani, M., Go\"{\i}ta, K., He, D.-C. (2010). Automatic change detection of
+buildings in urban environment from very high spatial resolution images
+using existing geodatabase and prior knowledge. \emph{ISPRS
+Journal of Photogrammetry and Remote Sensing}, 65(1),~143--153 [Online].
+Available at:
+http://www.sciencedirect.com/{\break}science/article/pii/S092427160900121X.
+
+\harvarditem{{Bovolo}}{2009}{Bovolo2009parcel}
+Bovolo, F. (2009). A multilevel parcel-based approach to change
+detection in very high resolution multitemporal images. \emph{IEEE
+Geoscience and Remote Sensing Letters}, 6(1),~33--37.
+
+\harvarditem{{Bovolo} and {Bruzzone}}{2007{a}}{Bovolo2007split}
+Bovolo, F. and Bruzzone, L. (2007a). A split-based approach to
+unsupervised change detection in large-size multitemporal images:
+Application to tsunami-damage assessment. \emph{IEEE Transactions on
+Geoscience and Remote Sensing}, 45(6), 1658--1670.
+
+\harvarditem{{Bovolo} and {Bruzzone}}{2007{b}}{Bovolo2007p-CVA}
+Bovolo, F. and Bruzzone, L. (2007b). A theoretical framework for
+unsupervised change detection based on change vector analysis in the
+polar domain. \emph{IEEE Transactions on Geoscience and Remote Sensing},
+45(1),~218--236.
+
+\harvarditem{{Bovolo} and {Bruzzone}}{2011}{Bovolo2011ICVA}
+Bovolo, F. and Bruzzone, L. (2011). An adaptive thresholding approach to
+multiple-change detection in multispectral images. \emph{IEEE
+International Geoscience and Remote Sensing Symposium}, 233--236.
+
+\harvarditem{Bovolo and Bruzzone}{2015}{Bovolo2015GRSM}
+Bovolo, F. and Bruzzone, L. (2015). The time variable in data fusion: A
+change detection perspective. \emph{IEEE Geoscience and Remote Sensing
+Magazine}, 3(3),~8--26.
+
+\harvarditem[{Bovolo} \emph{et~al}.]{{Bovolo}, {Marchesi} and
+  {Bruzzone}}{2012}{Bovolo2012C2VA}
+Bovolo, F., Marchesi, S., Bruzzone, L. (2012). A framework for automatic
+and unsupervised detection of multiple changes in multitemporal images.
+\emph{IEEE Transactions on Geoscience and Remote Sensing},
+50(6),~2196--2212.
+
+\harvarditem{{Bruzzone} and {Bovolo}}{2013}{Bruzzone2013PIEEE}
+Bruzzone, L. and Bovolo, F. (2013). A novel framework for the design of
+change-detection systems for very-high-resolution remote sensing images.
+\emph{Proceedings of the IEEE}, 101(3),~609--630.
+
+\harvarditem{{Bruzzone} and {Prieto}}{2000{a}}{Bruzzone2000diff}
+Bruzzone, L. and Prieto, D.F. (2000a). Automatic analysis of the
+difference image for unsupervised change detection. \emph{IEEE
+Transactions on Geoscience and Remote Sensing}, 38(3),~1171--1182.
+
+\harvarditem{Bruzzone and Prieto}{2000{b}}{Bruzzone2000minicost}
+{\spaceskip=.27em plus .1em minus .1em Bruzzone, L. and Prieto, D.F. (2000b). A minimum-cost thresholding
+technique for unsupervised change detection. \emph{International Journal
+of Remote Sensing}, 21(18), 3539--3544 [Online].
+Available at: https://doi.org/10.1080/014311600750037552.}
+
+\harvarditem{{Celik}}{2009}{Celik2009}
+Celik, T. (2009). Unsupervised change detection in satellite images
+using principal component analysis and \emph{k}-means clustering.
+\emph{IEEE Geoscience and Remote Sensing Letters}, 6(4),~772--776.
+
+\harvarditem{Celik and Ma}{2011}{Celik2011}
+Celik, T. and Ma, K.K. (2011). Multitemporal image change detection
+using undecimated discrete wavelet transform and active contours.
+\emph{IEEE Transactions on Geoscience and Remote Sensing},
+49(2),~706--716.
+
+\harvarditem[Chen \emph{et~al}.]{Chen, Gong, He, Pu and
+  Shi}{2003}{Chen2003ICVA}
+Chen, J., Gong, P., He, C., Pu, R., Shi, P. (2003). Land-use/land-cover
+change detection using improved change-vector analysis.
+\emph{Photogrammetric Engineering and Remote Sensing}, 69(4),~369--379.
+
+\harvarditem[Chen \emph{et~al}.]{Chen, Hay, Carvalho and
+  Wulder}{2012}{Chen2012}
+Chen, G., Hay, G.J., Carvalho, L.M.T., Wulder, M.A. (2012). Object-based
+change detection. \emph{International Journal of Remote Sensing},
+33(14),~4434--4457 [Online]. Available at: https://doi.org/10.1080/01431161.2011.648285.
+
+\harvarditem[Coppin \emph{et~al}.]{Coppin, Jonckheere, Nackaerts, Muys and
+  Lambin}{2004}{Coppin2004}
+Coppin, P., Jonckheere, I., Nackaerts, K., Muys, B., Lambin, E. (2004).
+Review article digital change detection methods in ecosystem monitoring:
+A review. \emph{International Journal of Remote Sensing},
+25(9),~1565--1596 [Online]. Available at: https://doi.org/10.1080/0143116031000101675.
+
+\harvarditem[{Dalla Mura} \emph{et~al}.]{{Dalla Mura}, {Benediktsson}, {Waske}
+  and {Bruzzone}}{2010}{DallaMura2010AP}
+Dalla Mura, M., Benediktsson, J.A., Waske, B., Bruzzone, L. (2010).
+Morphological attribute profiles for the analysis of very high
+resolution images. \emph{IEEE Transactions on Geoscience and Remote
+Sensing}, 48(10),~3747--3762.
+
+\harvarditem[{Du} \emph{et~al}.]{{Du}, {Liu}, {Gamba}, {Tan} and
+  {Xia}}{2012}{Du2012fusiondiff}
+Du, P., Liu, S., Gamba, P., Tan, K., Xia, J. (2012). Fusion of
+difference images for change detection over urban areas. \emph{IEEE
+Journal of Selected Topics in Applied Earth Observations and Remote
+Sensing}, 5(4),~1076--1086.
+
+\harvarditem[Du \emph{et~al}.]{Du, Liu, Xia and Zhao}{2013}{Du2013fusion}
+Du, P., Liu, S., Xia, J., Zhao, Y. (2013). Information fusion techniques
+for change detection from multi-temporal remote sensing images. \emph{Information Fusion}, 14(1),~19--27 [Online]. Available at:
+http://www.sciencedirect.com/science/article/{\break}pii/S1566253512000565.
+
+\harvarditem[{Falco} \emph{et~al}.]{{Falco}, {Mura}, {Bovolo}, {Benediktsson}
+  and {Bruzzone}}{2013}{Falco2013}
+Falco, N., Mura, M.D., Bovolo, F., Benediktsson, J.A., Bruzzone, L.
+(2013). Change detection in VHR images based on morphological attribute
+profiles. \emph{IEEE Geoscience and Remote Sensing Letters},
+10(3),~636--640.
+
+\harvarditem[Ghosh \emph{et~al}.]{Ghosh, Mishra and Ghosh}{2011}{GHOSH2011}
+Ghosh, A., Mishra, N.S., Ghosh, S. (2011). Fuzzy clustering algorithms
+for unsupervised change detection in remote sensing images.
+\emph{Information Sciences}, 181(4),~699--715 [Online]. Available at:
+http://www.sciencedirect.com/science/{\break}article/pii/S0020025510005153.
+
+\harvarditem[Han \emph{et~al}.]{Han, Gong and Li}{2008}{Han2008}
+Han, P., Gong, J., Li, Z. (2008). A new approach for choice of optimal
+spatial scale in image classification based on entropy. \emph{Wuhan
+Daxue Xuebao (Xinxi Kexue Ban)/ Geomatics and Information Science of
+Wuhan University}, 033(7),~676--679.
+
+\harvarditem[Han \emph{et~al}.]{Han, Javed, Jung and
+  Liu}{2020}{Han2020WDSfusion}
+Han, Y., Javed, A., Jung, S., Liu, S. (2020). Object-based change
+detection of very high resolution images by fusing pixel-based change
+detection results using weighted Dempster--Shafer theory.
+\emph{Remote Sensing}, 12(6) [Online]. Available at:
+https://www.mdpi.com/2072-4292/12/6/983.
+
+\harvarditem[{Huang} \emph{et~al}.]{{Huang}, {Zhang} and
+  {Zhu}}{2014}{Huang2014}
+Huang, X., Zhang, L., Zhu, T. (2014). Building change detection from
+multitemporal high-resolution remotely sensed images based on a
+morphological building index. \emph{IEEE Journal of Selected Topics in
+Applied Earth Observations and Remote Sensing}, 7(1), 105--115.
+
+\harvarditem[Hussain \emph{et~al}.]{Hussain, Chen, Cheng, Wei and
+  Stanley}{2013}{Hussain2013}
+Hussain, M., Chen, D., Cheng, A., Wei, H., Stanley, D. (2013). Change
+detection from remotely sensed images: From pixel-based to object-based
+approaches. \emph{ISPRS Journal of Photogrammetry and
+Remote Sensing}, 80, 91--106 [Online]. Available at:
+http://www.sciencedirect.com/science/article/pii/S0924271613000804.
+
+\harvarditem[Kaszta \emph{et~al}.]{Kaszta, Van De~Kerchove, Ramoelo, Cho,
+  Madonsela, Mathieu and Wolff}{2016}{Kaszta2016}
+{\spaceskip=.25em plus .1em minus .1em Kaszta, A., Van De~Kerchove, R., Ramoelo, A., Cho, M.A., Madonsela, S.,
+Mathieu, R.,}\break Wolff, E. (2016). Seasonal separation of African savanna
+components using WorldView-2 imagery: A comparison of pixel- and
+object-based approaches and selected classification algorithms. \emph{Remote Sensing}, 8(9) [Online]. Available at:
+https://www.mdpi.com/2072-4292/8/9/763.
+
+\harvarditem{{Keshava}}{2004}{Keshava2004}
+Keshava, N. (2004). Distance metrics and band selection in hyperspectral
+processing with applications to material identification and spectral
+libraries. \emph{IEEE Transactions on Geoscience and Remote Sensing},
+42(7),~1552--1565.
+
+\harvarditem[{Khan} \emph{et~al}.]{{Khan}, {He}, {Porikli} and
+  {Bennamoun}}{2017}{Khan2017}
+Khan, S.H., He, X., Porikli, F., Bennamoun, M. (2017). Forest change
+detection in incomplete satellite images with deep neural networks.
+\emph{IEEE Transactions on Geoscience and Remote Sensing},
+55(9),~5407--5423.
+
+\harvarditem[Leichtle \emph{et~al}.]{Leichtle, Gei{\ss}, Wurm, Lakes and
+  Taubenb\"{o}ck}{2017}{LEICHTLE2017}
+Leichtle, T., Geiß, C., Wurm, M., Lakes, T., Taubenböck, H. (2017).
+Unsupervised change detection in VHR remote sensing imagery -- An
+object-based clustering approach in a dynamic urban environment. \emph{International Journal of Applied Earth Observation
+and Geoinformation}, 54,~15--27 [Online]. Available at:
+http://www.sciencedirect.com/science/article/pii/S0303243416301490.
+
+\harvarditem[Li \emph{et~al}.]{Li, Celik, Longbotham and
+  Emery}{2015}{Li2015Gabor}
+Li, H., Celik, T., Longbotham, N., Emery, W.J. (2015). Gabor feature
+based unsupervised change detection of multitemporal SAR images based on
+two-level clustering. \emph{IEEE Geoscience and Remote Sensing Letters},
+12(12),~2458--2462.
+
+\harvarditem{{Liu} and {Du}}{2010}{Liu2010_Geobia}
+Liu, S. and Du, P. (2010). Object-oriented change detection from
+multi-temporal remotely sensed images. \emph{Geographic
+Object-Based Image Analysis}, number XXXVIII-4/C7.
+
+\harvarditem[{Liu} \emph{et~al}.]{{Liu}, {Bruzzone}, {Bovolo} and
+  {Du}}{2012}{Liu2012Whispers}
+Liu, S., Bruzzone, L., Bovolo, F., Du, P. (2012). Unsupervised
+hierarchical spectral analysis for change detection in hyperspectral
+images. \emph{4th Workshop on Hyperspectral Image and Signal
+Processing: Evolution in Remote Sensing (WHISPERS)}, pp.~1--4.
+
+\harvarditem[{Liu} \emph{et~al}.]{{Liu}, {Bruzzone}, {Bovolo}, {Zanetti} and
+  {Du}}{2015}{Liu2015S2CVA}
+Liu, S., Bruzzone, L., Bovolo, F., Zanetti, M., Du, P. (2015).
+Sequential spectral change vector analysis for iteratively discovering
+and detecting multiple changes in hyperspectral images. \emph{IEEE
+Transactions on Geoscience and Remote Sensing}, 53(8),~4363--4378.
+
+\harvarditem[{Liu} \emph{et~al}.]{{Liu}, {Du}, {Tong}, {Samat}, {Bruzzone} and
+  {Bovolo}}{2017a}{Liu2017M2C2VA}
+Liu, S., Du, Q., Tong, X., Samat, A., Bruzzone, L., Bovolo, F. (2017a).
+Multiscale morphological compressed change vector analysis for
+unsupervised multiple change detection. \emph{IEEE Journal of Selected
+Topics in Applied Earth Observations and Remote Sensing},
+10(9), 4124--4137.
+
+\harvarditem[{Liu} \emph{et~al}.]{{Liu}, {Tong}, {Bruzzone} and {Du}}{2017b}{Liu2017igarss}
+Liu, S., Tong, X., Bruzzone, L., Du, P. (2017b). A novel semisupervised
+framework for multiple change detection in hyperspectral images.
+\emph{IEEE International Geoscience and Remote Sensing Symposium
+(IGARSS)}, 173--176.
+
+\harvarditem[{Liu} \emph{et~al}.]{{Liu}, {Chen}, {Xu}, {Li}, {Yan}, {Diao} and
+  {Sun}}{2019a}{Liu2019GAN}
+Liu, J., Chen, K., Xu, G., Li, H., Yan, M., Diao, W., Sun, X. (2019a).
+Semi-supervised change detection based on graphs with generative
+adversarial networks. \emph{IEEE International
+Geoscience and Remote Sensing Symposium (IGARSS)}, 74--77.
+
+\harvarditem[{Liu} \emph{et~al}.]{Liu, Du, Tong, Samat and Bruzzone}{2019b}{Liu2019bexpand}
+Liu, S., Du, Q., Tong, X., Samat, A., Bruzzone, L. (2019b). Unsupervised
+change detection in multispectral remote sensing images via
+spectral-spatial band expansion. \emph{IEEE Journal of Selected Topics
+in Applied Earth Observations and Remote Sensing}, 12(9),~3578--3587.
+
+
+\harvarditem[{Liu} \emph{et~al}.]{Liu, Marinelli, Bruzzone and Bovolo}{2019c}{Liu2019reviewHSI}
+Liu, S., Marinelli, D., Bruzzone, L., Bovolo, F. (2019c). A review of
+change detection in multitemporal hyperspectral images: Current
+techniques, applications, and challenges. \emph{IEEE Geoscience and
+Remote Sensing Magazine}, 7(2),~140--158.
+
+\harvarditem[{Liu} \emph{et~al}.]{Liu, Hu, Tong, Xia, Du, Samat and Ma}{2020a}{Liu2020RS}
+Liu, S., Hu, Q., Tong, X., Xia, J., Du, Q., Samat, A., Ma, X. (2020a). A
+multi-scale superpixel-guided filter feature extraction and selection
+approach for classification of very-high-resolution remotely sensed
+imagery. \emph{Remote Sensing}, 12(5) [Online]. Available at:
+https://www.mdpi.com/2072-4292/12/5/862.
+
+\harvarditem[{Liu} \emph{et~al}.]{Liu, Zheng, Dalponte and Tong}{2020b}{Liu2020fireindex}
+Liu, S., Zheng, Y., Dalponte, M., Tong, X. (2020b). A novel fire
+index-based burned area change detection approach using Landsat-8 OLI
+data. \emph{European Journal of Remote Sensing}, 53(1),~104--112 [Online].
+Available at: https://doi.org/10.1080/{\break}22797254.2020.1738900.
+
+\harvarditem[Lu \emph{et~al}.]{Lu, Mausel, Brond\'{i}zio and
+  Moran}{2004}{Lu2005CDT}
+Lu, D., Mausel, P., Brondízio, E., Moran, E. (2004). Change detection
+techniques. \emph{International Journal of Remote Sensing},
+25(12),~2365--2401 [Online]. Available at: https://doi.org/10.1080/0143116031000139863.
+
+\harvarditem{Malila}{1980}{Malila1980}
+Malila, W. (1980). Change vector analysis: An approach for detecting
+forest changes with landsat. \emph{LARS Symposia}, Purdue University, West Lafayette, IN.
+
+\harvarditem[{Mou} \emph{et~al}.]{{Mou}, {Bruzzone} and {Zhu}}{2019}{Mou2019}
+Mou, L., Bruzzone, L., Zhu, X.X. (2019). Learning
+spectral-spatial-temporal features via a recurrent convolutional neural
+network for change detection in multispectral imagery. \emph{IEEE
+Transactions on Geoscience and Remote Sensing}, 57(2),~924--935.
+
+\harvarditem[Mura \emph{et~al}.]{Mura, Benediktsson, Bovolo and
+  Bruzzone}{2008}{DallaMura2008}
+Mura, M.D., Benediktsson, J.A., Bovolo, F., Bruzzone, L. (2008). An
+unsupervised technique based on morphological filters for change
+detection in very high resolution images. \emph{IEEE Geoscience and
+Remote Sensing Letters}, 5(3),~433--437.
+
+\harvarditem{{Nielsen}}{2007}{Nielsen2007IRMAD}
+Nielsen, A.A. (2007). The regularized iteratively reweighted mad method
+for change detection in multi- and hyperspectral data. \emph{IEEE
+Transactions on Image Processing}, 16(2),~463--478.
+
+\harvarditem{Nielsen and Canty}{2008}{Nielsen2008KPCA}
+Nielsen, A.A. and Canty, M.J. (2008). Kernel principal component
+analysis for change detection [Online]. Available at:
+http://www2.compute.dtu.dk/pubdb/pubs/{\break}5667-full.html.
+
+\harvarditem[Okyay \emph{et~al}.]{Okyay, Telling, Glennie and
+  Dietrich}{2019}{Okyay2019Lidar}
+Okyay, U., Telling, J., Glennie, C.L., Dietrich, W.E. (2019). Airborne
+lidar change detection: An overview of earth sciences applications. \emph{Earth-Science Reviews}, 198,~102929 [Online]. Available at:
+http://www.sciencedirect.com/science/article/{\break}pii/S0012825218306470.
+
+\harvarditem{Otsu}{1979}{Otsu1979}
+Otsu, N. (1979). A threshold selection method from gray-level
+histograms. \emph{IEEE Transactions on Systems, Man, and Cybernetics},
+9(1),~62--66.
+
+\harvarditem[{Saha} \emph{et~al}.]{{Saha}, {Bovolo} and
+  {Bruzzone}}{2019}{Saha2019}
+Saha, S., Bovolo, F., Bruzzone, L. (2019). Unsupervised deep change
+vector analysis for multiple-change detection in VHR images. \emph{IEEE
+Transactions on Geoscience and Remote Sensing}, 57(6),~3677--3693.
+
+\harvarditem{Singh}{1989}{SINGH1989}
+Singh, A. (1989). Review article digital change detection techniques
+using remotely-sensed data. \emph{International Journal of Remote
+Sensing}, 10(6),~989--1003 [Online]. Available at: https://doi.org/10.1080/01431168908903939.
+
+\harvarditem[Song \emph{et~al}.]{Song, Hansen, Stehman, Potapov, Alexandra,
+  Vermote and Townshend}{2018}{Song2018Nature}
+Song, X.P., Hansen, M.C., Stehman, S.V., Potapov, S.V., Tyukavina, A.,
+Vermote, E.F., Townshend, J.R. (2018). Global land change from 1982 to
+2016. \emph{Nature}, 560, 639--643.
+
+\harvarditem[{Tong} \emph{et~al}.]{{Tong}, {Pan}, {Liu}, {Li}, {Luo}, {Xie} and
+  {Xu}}{2020}{Tong2020}
+Tong, X., Pan, H., Liu, S., Li, B., Luo, X., Xie, H., Xu, X. (2020). A
+novel approach for hyperspectral change detection based on uncertain
+area analysis and improved transfer learning. \emph{IEEE Journal of
+Selected Topics in Applied Earth Observations and Remote Sensing},
+13,~2056--2069.
+
+\harvarditem[Wang \emph{et~al}.]{Wang, Liu, Du, Liang, Xia and
+  Li}{2018}{Wang2018RS}
+Wang, X., Liu, S., Du, P., Liang, H., Xia, J., Li, Y. (2018).
+Object-based change detection in urban areas from high spatial
+resolution images based on multiple features and ensemble learning. \emph{Remote Sensing}, 10(2) [Online]. Available at:
+https://www.mdpi.com/2072-4292/10/2/276.
+
+\harvarditem[Wei \emph{et~al}.]{Wei, Zhao, Li, Wang and Liu}{2019}{Wei2019}
+Wei, C., Zhao, P., Li, X., Wang, Y., Liu, F. (2019). Unsupervised change
+detection of VHR remote sensing images based on multi-resolution Markov
+random field in wavelet domain. \emph{International Journal of Remote
+Sensing}, 40(20),~7750--7766 [Online].
+Available at: https://doi.org/10.1080/01431161.2019.1602792.
+
+\harvarditem[Wu \emph{et~al}.]{Wu, Hu and Fan}{2012}{Wu2012isprs}
+Wu, Z., Hu, Z., Fan, Q. (2012). Superpixel-based unsupervised change
+detection using multi-dimensional change vector analysis and SVM-based
+classification. \emph{ISPRS Annals of Photogrammetry, Remote Sensing and
+Spatial Information Sciences}, I-7,~257--262 [Online]. Available at:
+https://www.isprs-ann-photogramm-remote-{\break}sens-spatial-inf-sci.net/I-7/257/2012/.
+
+\harvarditem[{Zanetti} \emph{et~al}.]{{Zanetti}, {Bovolo} and
+  {Bruzzone}}{2015}{Zanetti2015}
+Zanetti, M., Bovolo, F., Bruzzone, L. (2015). Rayleigh--Rice mixture
+parameter estimation via EM algorithm for change detection in
+multispectral images. \emph{IEEE Transactions on Image Processing},
+24(12),~5004--5016.
+
+\harvarditem[{Zhang} \emph{et~al}.]{{Zhang}, {Lu} and
+  {Li}}{2018}{Zhang2018semi-CD}
+Zhang, W., Lu, X., Li, X. (2018). A coarse-to-fine semi-supervised
+change detection for multispectral images. \emph{IEEE Transactions on
+Geoscience and Remote Sensing}, 56(6), 3587--3599.
+
+\end{thebibliography}
+\end{document}
